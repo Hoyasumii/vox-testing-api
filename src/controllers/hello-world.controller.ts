@@ -1,7 +1,7 @@
 import { Controller, Get } from "@nestjs/common";
 import { makeHelloWorldFactory } from "@/factories";
 
-@Controller()
+@Controller("/hello-world")
 export class HelloWorldController {
 	private readonly service = makeHelloWorldFactory();
 

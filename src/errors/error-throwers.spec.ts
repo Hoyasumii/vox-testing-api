@@ -1,4 +1,4 @@
-import { ErrorThrowers } from "./index";
+import ErrorThrowers from "./index";
 import { 
 	BadRequestError, 
 	UnauthorizedError, 

@@ -21,7 +21,7 @@ export { TooManyRequestsError } from "./too-many-requests.error";
 export { InternalServerError } from "./internal-server.error";
 export { ServiceUnavailableError } from "./service-unavailable.error";
 
-export const ErrorThrowers = {
+export default {
 	badRequest: (message?: string) => {
 		throw new BadRequestError(message);
 	},

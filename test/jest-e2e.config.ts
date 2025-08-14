@@ -1,5 +1,8 @@
 import { pathsToModuleNameMapper, type JestConfigWithTsJest } from "ts-jest";
 import { compilerOptions } from "../tsconfig.json";
+import * as dotenv from "dotenv";
+
+dotenv.config({ path: "../.env.testing" });
 
 export default {
 	moduleFileExtensions: ["js", "ts"],

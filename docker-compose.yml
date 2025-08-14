@@ -1,0 +1,17 @@
+services:
+  vox-testing-db:
+    image: bitnami/postgresql
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRESQL_USERNAME=${POSTGRESQL_USERNAME}
+      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+      - POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}
+    volumes:
+      - ./persistence/postgresql:/bitnami/postgresql
+
+  vox-testing-redis:
+    image: redis:8.2.0-alpine
+    ports:
+      - 6379:6379
+    command: ["redis-server"]

@@ -1,9 +1,9 @@
+import type { email } from "@/dtos";
 import {
 	CreateUserDTO,
 	UpdateUserDTO,
 	UserResponseDTO,
 	UserAuthResponseDTO,
-	GetUserByEmailDTO,
 } from "@/dtos/users";
 import type { UserType } from "@/dtos/users";
 import { UsersRepositoryBase } from "@/repositories/users-repository.base";
@@ -91,9 +91,7 @@ export class UsersRepository extends UsersRepositoryBase {
 		};
 	}
 
-	async getByEmail(
-		data: GetUserByEmailDTO,
-	): Promise<UserAuthResponseDTO | null> {
+	async getByEmail(data: email): Promise<UserAuthResponseDTO | null> {
 		const user = this.users.find((u) => u.email === data);
 
 		if (!user) {

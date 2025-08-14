@@ -1,7 +1,6 @@
-import type { uuid } from "@/dtos";
+import type { email, uuid } from "@/dtos";
 import type {
 	CreateUserDTO,
-	GetUserByEmailDTO,
 	UpdateUserDTO,
 	UserAuthResponseDTO,
 	UserResponseDTO,
@@ -23,7 +22,7 @@ export class UsersRepository extends UsersRepositoryBase {
 	}
 
 	async getByEmail(
-		email: GetUserByEmailDTO,
+		email: email,
 	): Promise<UserAuthResponseDTO | null> {
 		const targetUser = await prisma.user.findUnique({
 			where: { email },

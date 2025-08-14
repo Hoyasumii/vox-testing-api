@@ -2,8 +2,8 @@ import { UsersRepository } from "./users.repository";
 import { 
 	CreateUserDTO, 
 	UpdateUserDTO, 
-	GetUserByEmailDTO 
 } from "@/dtos/users";
+import { email } from '@/dtos';
 
 describe("InMemoryUsersRepository", () => {
 	let repository: UsersRepository;
@@ -200,7 +200,7 @@ describe("InMemoryUsersRepository", () => {
 			};
 			await repository.create(userData);
 
-			const emailDTO: GetUserByEmailDTO = "joao@example.com";
+			const emailDTO: email = "joao@example.com";
 
 			const authData = await repository.getByEmail(emailDTO);
 
@@ -210,7 +210,7 @@ describe("InMemoryUsersRepository", () => {
 		});
 
 		it("deve retornar null para email inexistente", async () => {
-			const emailDTO: GetUserByEmailDTO = "inexistente@example.com";
+			const emailDTO: email = "inexistente@example.com";
 
 			const authData = await repository.getByEmail(emailDTO);
 
@@ -226,7 +226,7 @@ describe("InMemoryUsersRepository", () => {
 			};
 			await repository.create(userData);
 
-			const emailDTO: GetUserByEmailDTO = "joao@example.com";
+			const emailDTO: email = "joao@example.com";
 
 			const authData = await repository.getByEmail(emailDTO);
 

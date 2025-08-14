@@ -6,4 +6,4 @@ import { HelloWorldController } from "@/controllers";
 	controllers: [HelloWorldController],
 	providers: [],
 })
-export class AppModule {}
+export class RoutesModule {}

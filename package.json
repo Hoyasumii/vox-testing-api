@@ -4,6 +4,7 @@
   "description": "",
   "author": "Alan Reis <alanreisanjo@gmail.com>",
   "private": true,
+  "type": "module",
   "license": "MIT",
   "scripts": {
     "build": "nest build",
@@ -27,6 +28,7 @@
     "@nestjs/swagger": "^11.2.0",
     "@prisma/client": "6.14.0",
     "@scalar/nestjs-api-reference": "^0.5.12",
+    "argon2": "^0.44.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "zod": "^4.0.17"
@@ -51,8 +53,8 @@
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.7.3",
-    "vitest": "^3.2.4"
+    "tsx": "^4.20.4",
+    "typescript": "^5.7.3"
   },
   "packageManager": "pnpm@10.12.4+sha512.5ea8b0deed94ed68691c9bad4c955492705c5eeb8a87ef86bc62c74a26b037b08ff9570f108b2e4dbd1dd1a9186fea925e527f141c648e85af45631074680184"
 }

@@ -41,22 +41,44 @@ model Doctor {
   userId String @unique @map("user_id")
   user   User   @relation(fields: [userId], references: [id])
 
-  Schedule Schedule[]
+  Schedule           Schedule[]
+  DoctorAvailability DoctorAvailability[]
 
   @@index([userId])
   @@map("doctors")
 }
 
+model DoctorAvailability {
+  id String @id @default(uuid())
+
+  doctorId String @map("doctor_id")
+  doctor   Doctor @relation(fields: [doctorId], references: [id])
+
+  dayOfWeek Int @map("day_of_week")
+  startHour Int @map("start_time")
+  endHour   Int @map("end_time")
+
+  schedules Schedule[]
+
+  @@unique([doctorId, dayOfWeek, startHour, endHour])
+  @@index([doctorId, dayOfWeek])
+  @@map("doctors_availability")
+}
+
 model Schedule {
   id     String         @id @default(uuid())
-  date   DateTime
   status ScheduleStatus
 
-  patientId String
+  availabilityId String             @map("availability_id")
+  availability   DoctorAvailability @relation(fields: [availabilityId], references: [id])
+
+  patientId String @map("patient_id")
   patient   User   @relation(fields: [patientId], references: [id])
 
   doctorId String @map("doctor_id")
   doctor   Doctor @relation(fields: [doctorId], references: [id])
+
+  scheduledAt DateTime @map("scheduled_at")
 
   @@map("schedules")
 }

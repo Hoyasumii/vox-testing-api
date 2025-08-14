@@ -1,6 +1,6 @@
-import { UserResponseDto } from "./user-response.dto";
+import { UserResponseDTO } from "./user-response.dto";
 
-describe("UserResponseDto", () => {
+describe("UserResponseDTO", () => {
 	it("should validate a valid user response", () => {
 		const validData = {
 			id: "123e4567-e89b-12d3-a456-426614174000",
@@ -11,7 +11,7 @@ describe("UserResponseDto", () => {
 			updatedAt: new Date(),
 		};
 
-		const result = UserResponseDto.safeParse(validData);
+		const result = UserResponseDTO.safeParse(validData);
 		expect(result.success).toBe(true);
 	});
 
@@ -25,7 +25,7 @@ describe("UserResponseDto", () => {
 			updatedAt: new Date(),
 		};
 
-		const result = UserResponseDto.safeParse(invalidData);
+		const result = UserResponseDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 	});
 
@@ -39,7 +39,7 @@ describe("UserResponseDto", () => {
 			updatedAt: new Date(),
 		};
 
-		const result = UserResponseDto.safeParse(invalidData);
+		const result = UserResponseDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 	});
 
@@ -53,7 +53,7 @@ describe("UserResponseDto", () => {
 			updatedAt: new Date(),
 		};
 
-		const result = UserResponseDto.safeParse(invalidData);
+		const result = UserResponseDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 	});
 
@@ -67,7 +67,7 @@ describe("UserResponseDto", () => {
 			updatedAt: new Date(),
 		};
 
-		const result = UserResponseDto.safeParse(invalidData);
+		const result = UserResponseDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 	});
 });

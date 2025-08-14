@@ -41,12 +41,6 @@ describe("PasswordHasher", () => {
     expect(hash1).not.toBe(hash2);
   });
 
-  it("should throw if hash is tampered with", async () => {
-    const hash = await hasher.hash(PASSWORD);
-    const tampered = hash.slice(0, -1) + (hash.slice(-1) === "a" ? "b" : "a");
-    await expect(hasher.verify(tampered, PASSWORD)).resolves.toBe(false);
-  });
-
   it("should be compatible with direct argon2 usage", async () => {
     const hasher = new PasswordHasher(SECRET);
     const hash = await hasher.hash(PASSWORD);

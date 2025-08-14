@@ -8,8 +8,8 @@
 - ✅ Reutilização facilitada
 
 ### 2. **Padronização dos Nomes**
-- ✅ Schemas renomeados de `*Schema` para `*Dto`
-- ✅ Mesmo nome para constante e tipo (ex: `CreateUserDto`)
+- ✅ Schemas renomeados de `*Schema` para `*DTO`
+- ✅ Mesmo nome para constante e tipo (ex: `CreateUserDTO`)
 - ✅ Consumo mais intuitivo
 
 ### 3. **Estrutura Limpa e Organizada**
@@ -22,12 +22,12 @@
 ```
 src/dtos/users/
 ├── user-types.ts           # UserType enum
-├── create-user.dto.ts      # CreateUserDto
-├── update-user.dto.ts      # UpdateUserDto  
-├── user-response.dto.ts    # UserResponseDto
-├── get-user-by-id.dto.ts   # GetUserByIdDto
-├── get-user-by-email.dto.ts # GetUserByEmailDto
-├── delete-user.dto.ts      # DeleteUserDto
+├── create-user.dto.ts      # CreateUserDTO
+├── update-user.dto.ts      # UpdateUserDTO  
+├── user-response.dto.ts    # UserResponseDTO
+├── get-user-by-id.dto.ts   # GetUserByIdDTO
+├── get-user-by-email.dto.ts # GetUserByEmailDTO
+├── delete-user.dto.ts      # DeleteUserDTO
 ├── index.ts               # Exportações
 ├── *.spec.ts              # Testes individuais
 └── README.md              # Documentação
@@ -37,16 +37,16 @@ src/dtos/users/
 
 ### Antes (Confuso):
 ```typescript
-import { CreateUserSchema, CreateUserDto } from './dto';
+import { CreateUserSchema, CreateUserDTO } from './dto';
 const result = CreateUserSchema.parse(data);
-const user: CreateUserDto = result.data;
+const user: CreateUserDTO = result.data;
 ```
 
 ### Agora (Intuitivo):
 ```typescript
-import { CreateUserDto } from './dto';
-const result = CreateUserDto.parse(data); // Mesmo nome!
-const user: CreateUserDto = result.data;  // Mesmo nome!
+import { CreateUserDTO } from './dto';
+const result = CreateUserDTO.parse(data); // Mesmo nome!
+const user: CreateUserDTO = result.data;  // Mesmo nome!
 ```
 
 ## 📊 Estatísticas
@@ -60,9 +60,9 @@ const user: CreateUserDto = result.data;  // Mesmo nome!
 ## 🎉 Benefícios Obtidos
 
 ### Para Desenvolvedores:
-- **Importação mais simples**: `import { CreateUserDto }`
+- **Importação mais simples**: `import { CreateUserDTO }`
 - **Nomes consistentes**: Mesmo nome para schema e tipo
-- **Menos confusão**: Não precisa lembrar se é Schema ou Dto
+- **Menos confusão**: Não precisa lembrar se é Schema ou DTO
 - **Autocompletar melhor**: IDEs sugerem corretamente
 
 ### Para Manutenção:
@@ -74,7 +74,7 @@ const user: CreateUserDto = result.data;  // Mesmo nome!
 ### Para Consumo:
 ```typescript
 // Simples e direto
-import { CreateUserDto, UserType } from '@/dtos/users';
+import { CreateUserDTO, UserType } from '@/dtos/users';
 
 const userData = { 
   name: "João", 
@@ -83,7 +83,7 @@ const userData = {
   type: "DOCTOR" as UserType 
 };
 
-const result = CreateUserDto.safeParse(userData);
+const result = CreateUserDTO.safeParse(userData);
 // ✅ Funciona perfeitamente!
 ```
 

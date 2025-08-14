@@ -1,7 +1,7 @@
-import { CreateUserDto } from "./create-user.dto";
+import { CreateUserDTO } from "./create-user.dto";
 import { UserType } from "./user-types";
 
-describe("CreateUserDto", () => {
+describe("CreateUserDTO", () => {
 	it("should validate a valid user creation data", () => {
 		const validData = {
 			name: "João Silva",
@@ -10,7 +10,7 @@ describe("CreateUserDto", () => {
 			type: "DOCTOR" as UserType,
 		};
 
-		const result = CreateUserDto.safeParse(validData);
+		const result = CreateUserDTO.safeParse(validData);
 		expect(result.success).toBe(true);
 	});
 
@@ -22,7 +22,7 @@ describe("CreateUserDto", () => {
 			type: "DOCTOR" as UserType,
 		};
 
-		const result = CreateUserDto.safeParse(invalidData);
+		const result = CreateUserDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.issues[0].message).toBe("Email deve ter um formato válido");
@@ -37,7 +37,7 @@ describe("CreateUserDto", () => {
 			type: "DOCTOR" as UserType,
 		};
 
-		const result = CreateUserDto.safeParse(invalidData);
+		const result = CreateUserDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.issues[0].message).toBe("A senha deve ter no mínimo 7 caracteres.");
@@ -52,7 +52,7 @@ describe("CreateUserDto", () => {
 			type: "INVALID_TYPE",
 		};
 
-		const result = CreateUserDto.safeParse(invalidData);
+		const result = CreateUserDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 	});
 
@@ -64,7 +64,7 @@ describe("CreateUserDto", () => {
 			type: "DOCTOR" as UserType,
 		};
 
-		const result = CreateUserDto.safeParse(invalidData);
+		const result = CreateUserDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.issues[0].message).toBe("Nome é obrigatório");

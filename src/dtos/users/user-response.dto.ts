@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { UserType } from "./user-types";
 
-export const UserResponseDto = z.object({
+export const UserResponseDTO = z.object({
 	id: z.uuid(),
 	name: z.string(),
 	email: z.email(),
@@ -10,4 +10,4 @@ export const UserResponseDto = z.object({
 	updatedAt: z.date(),
 });
 
-export type UserResponseDto = z.infer<typeof UserResponseDto>;
+export type UserResponseDTO = z.infer<typeof UserResponseDTO>;

@@ -1,19 +1,19 @@
-import { UpdateUserDto } from "./update-user.dto";
+import { UpdateUserDTO } from "./update-user.dto";
 
-describe("UpdateUserDto", () => {
+describe("UpdateUserDTO", () => {
 	it("should validate partial update data", () => {
 		const validData = {
 			name: "João Santos",
 		};
 
-		const result = UpdateUserDto.safeParse(validData);
+		const result = UpdateUserDTO.safeParse(validData);
 		expect(result.success).toBe(true);
 	});
 
 	it("should validate empty object", () => {
 		const validData = {};
 
-		const result = UpdateUserDto.safeParse(validData);
+		const result = UpdateUserDTO.safeParse(validData);
 		expect(result.success).toBe(true);
 	});
 
@@ -22,7 +22,7 @@ describe("UpdateUserDto", () => {
 			email: "email-invalido",
 		};
 
-		const result = UpdateUserDto.safeParse(invalidData);
+		const result = UpdateUserDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.issues[0].message).toBe("Email deve ter um formato válido");
@@ -36,7 +36,7 @@ describe("UpdateUserDto", () => {
 			type: "PATIENT" as const,
 		};
 
-		const result = UpdateUserDto.safeParse(validData);
+		const result = UpdateUserDTO.safeParse(validData);
 		expect(result.success).toBe(true);
 	});
 
@@ -45,7 +45,7 @@ describe("UpdateUserDto", () => {
 			name: "",
 		};
 
-		const result = UpdateUserDto.safeParse(invalidData);
+		const result = UpdateUserDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.issues[0].message).toBe("Nome é obrigatório");

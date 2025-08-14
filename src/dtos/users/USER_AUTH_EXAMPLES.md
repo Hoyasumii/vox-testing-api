@@ -1,8 +1,8 @@
-# UserAuthResponseDto - Exemplo de Uso
+# UserAuthResponseDTO - Exemplo de Uso
 
 ## Propósito
 
-O `UserAuthResponseDto` foi criado especificamente para operações de autenticação que precisam retornar apenas o **ID** e a **senha hasheada** do usuário. É usado principalmente no método `getByEmail` para verificação de credenciais.
+O `UserAuthResponseDTO` foi criado especificamente para operações de autenticação que precisam retornar apenas o **ID** e a **senha hasheada** do usuário. É usado principalmente no método `getByEmail` para verificação de credenciais.
 
 ## Estrutura
 
@@ -18,19 +18,19 @@ O `UserAuthResponseDto` foi criado especificamente para operações de autentica
 ### 1. Autenticação de Login
 
 ```typescript
-import { UserAuthResponseDto, GetUserByEmailDto } from '@/dtos/users';
+import { UserAuthResponseDTO, GetUserByEmailDTO } from '@/dtos/users';
 
 class AuthService {
   async authenticate(email: string, plainPassword: string) {
     // Buscar usuário por email
-    const emailDto = GetUserByEmailDto.parse({ email });
-    const user = await this.userRepository.getByEmail(emailDto);
+    const emailDTO = GetUserByEmailDTO.parse({ email });
+    const user = await this.userRepository.getByEmail(emailDTO);
     
     if (!user) {
       throw new UnauthorizedError('Credenciais inválidas');
     }
     
-    // user é do tipo UserAuthResponseDto
+    // user é do tipo UserAuthResponseDTO
     const isValidPassword = await this.passwordHasher.compare(
       plainPassword, 
       user.password
@@ -49,10 +49,10 @@ class AuthService {
 ### 2. Implementação no Repository
 
 ```typescript
-import { UserAuthResponseDto, GetUserByEmailDto } from '@/dtos/users';
+import { UserAuthResponseDTO, GetUserByEmailDTO } from '@/dtos/users';
 
 class UsersRepository extends UsersRepositoryBase {
-  async getByEmail(data: GetUserByEmailDto): Promise<UserAuthResponseDto | null> {
+  async getByEmail(data: GetUserByEmailDTO): Promise<UserAuthResponseDTO | null> {
     const user = await this.prisma.user.findUnique({
       where: { email: data.email },
       select: {
@@ -67,7 +67,7 @@ class UsersRepository extends UsersRepositoryBase {
     }
     
     // Validar e retornar dados tipados
-    return UserAuthResponseDto.parse(user);
+    return UserAuthResponseDTO.parse(user);
   }
 }
 ```
@@ -75,11 +75,11 @@ class UsersRepository extends UsersRepositoryBase {
 ### 3. Diferença dos Outros DTOs
 
 ```typescript
-// UserResponseDto - Para operações normais (SEM password)
+// UserResponseDTO - Para operações normais (SEM password)
 const publicUser = await userRepository.getById({ id: userId });
 // { id, name, email, type, createdAt, updatedAt }
 
-// UserAuthResponseDto - Para autenticação (APENAS id e password)
+// UserAuthResponseDTO - Para autenticação (APENAS id e password)
 const authUser = await userRepository.getByEmail({ email });
 // { id, password }
 ```
@@ -102,8 +102,8 @@ const authUser = await userRepository.getByEmail({ email });
 
 ```typescript
 import { 
-  UserAuthResponseDto, 
-  GetUserByEmailDto 
+  UserAuthResponseDTO, 
+  GetUserByEmailDTO 
 } from '@/dtos/users';
 import { UnauthorizedError } from '@/errors';
 
@@ -113,10 +113,10 @@ export class LoginController {
     
     try {
       // Validar input
-      const emailDto = GetUserByEmailDto.parse({ email });
+      const emailDTO = GetUserByEmailDTO.parse({ email });
       
-      // Buscar usuário (retorna UserAuthResponseDto)
-      const user = await this.userRepository.getByEmail(emailDto);
+      // Buscar usuário (retorna UserAuthResponseDTO)
+      const user = await this.userRepository.getByEmail(emailDTO);
       
       if (!user) {
         throw new UnauthorizedError('Email ou senha inválidos');
@@ -151,7 +151,7 @@ export class LoginController {
 
 | DTO | Campos | Uso |
 |-----|--------|-----|
-| `UserResponseDto` | id, name, email, type, createdAt, updatedAt | Operações gerais (CRUD) |
-| `UserAuthResponseDto` | id, password | **Autenticação apenas** |
-| `CreateUserDto` | name, email, password, type | Criação de usuários |
-| `UpdateUserDto` | name?, email?, type? | Atualização (sem password) |
+| `UserResponseDTO` | id, name, email, type, createdAt, updatedAt | Operações gerais (CRUD) |
+| `UserAuthResponseDTO` | id, password | **Autenticação apenas** |
+| `CreateUserDTO` | name, email, password, type | Criação de usuários |
+| `UpdateUserDTO` | name?, email?, type? | Atualização (sem password) |

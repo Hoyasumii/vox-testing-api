@@ -22,7 +22,7 @@ src/dtos/users/
 Enum compartilhado para tipos de usuário.
 - **Valores**: "DOCTOR" | "PATIENT"
 
-### CreateUserDto
+### CreateUserDTO
 Para criação de novos usuários.
 
 **Campos:**
@@ -31,7 +31,7 @@ Para criação de novos usuários.
 - `password`: string (obrigatório, mínimo 8 caracteres)
 - `type`: UserType ("DOCTOR" | "PATIENT")
 
-### UpdateUserDto
+### UpdateUserDTO
 Para atualização de dados do usuário.
 
 **Campos (todos opcionais):**
@@ -41,7 +41,7 @@ Para atualização de dados do usuário.
 
 **Nota:** Por segurança, a senha não pode ser atualizada através deste DTO.
 
-### UserResponseDto
+### UserResponseDTO
 Para retorno de dados do usuário (sem senha).
 
 **Campos:**
@@ -52,7 +52,7 @@ Para retorno de dados do usuário (sem senha).
 - `createdAt`: Date
 - `updatedAt`: Date
 
-### UserAuthResponseDto
+### UserAuthResponseDTO
 Para retorno de dados de autenticação (apenas id e password).
 
 **Campos:**
@@ -61,19 +61,19 @@ Para retorno de dados de autenticação (apenas id e password).
 
 **Uso:** Específico para operações de autenticação como `getByEmail` onde apenas id e password hasheado são necessários.
 
-### GetUserByIdDto
+### GetUserByIdDTO
 Para buscar usuário por ID.
 
 **Campos:**
 - `id`: string (UUID válido)
 
-### GetUserByEmailDto
+### GetUserByEmailDTO
 Para buscar usuário por email.
 
 **Campos:**
 - `email`: string (formato de email válido)
 
-### DeleteUserDto
+### DeleteUserDTO
 Para deletar usuário por ID.
 
 **Campos:**
@@ -83,11 +83,11 @@ Para deletar usuário por ID.
 
 ### Mesmo Nome para Constante e Tipo
 ```typescript
-// Intuitivo - CreateUserDto é tanto o schema quanto o tipo!
-import { CreateUserDto } from './dtos/users';
+// Intuitivo - CreateUserDTO é tanto o schema quanto o tipo!
+import { CreateUserDTO } from './dtos/users';
 
-const result = CreateUserDto.safeParse(data); // Schema
-const user: CreateUserDto = result.data; // Tipo
+const result = CreateUserDTO.safeParse(data); // Schema
+const user: CreateUserDTO = result.data; // Tipo
 ```
 
 ### Constantes Separadas
@@ -101,9 +101,9 @@ const userType: UserType = "DOCTOR";
 ```typescript
 import { 
   UserType,
-  CreateUserDto, 
-  UpdateUserDto, 
-  UserResponseDto 
+  CreateUserDTO, 
+  UpdateUserDTO, 
+  UserResponseDTO 
 } from '@/dtos/users';
 ```
 

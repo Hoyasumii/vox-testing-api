@@ -1,17 +1,17 @@
-import { GetUserByEmailDto } from "./get-user-by-email.dto";
+import { GetUserByEmailDTO } from "./get-user-by-email.dto";
 
-describe("GetUserByEmailDto", () => {
+describe("GetUserByEmailDTO", () => {
 	it("should validate valid email", () => {
 		const validData = "usuario@email.com";
 
-		const result = GetUserByEmailDto.safeParse(validData);
+		const result = GetUserByEmailDTO.safeParse(validData);
 		expect(result.success).toBe(true);
 	});
 
 	it("should reject invalid email", () => {
 		const invalidData = "email-invalido";
 
-		const result = GetUserByEmailDto.safeParse(invalidData);
+		const result = GetUserByEmailDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.issues[0].message).toBe("Email deve ter um formato válido");
@@ -21,14 +21,14 @@ describe("GetUserByEmailDto", () => {
 	it("should reject empty string", () => {
 		const invalidData = "";
 
-		const result = GetUserByEmailDto.safeParse(invalidData);
+		const result = GetUserByEmailDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 	});
 
 	it("should reject missing email field", () => {
 		const invalidData = "";
 
-		const result = GetUserByEmailDto.safeParse(invalidData);
+		const result = GetUserByEmailDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 	});
 
@@ -41,7 +41,7 @@ describe("GetUserByEmailDto", () => {
 		];
 
 		validEmails.forEach(email => {
-			const result = GetUserByEmailDto.safeParse(email);
+			const result = GetUserByEmailDTO.safeParse(email);
 			expect(result.success).toBe(true);
 		});
 	});
@@ -56,7 +56,7 @@ describe("GetUserByEmailDto", () => {
 		];
 
 		invalidEmails.forEach(email => {
-			const result = GetUserByEmailDto.safeParse(email);
+			const result = GetUserByEmailDTO.safeParse(email);
 			expect(result.success).toBe(false);
 		});
 	});

@@ -1,13 +1,13 @@
-import { UserAuthResponseDto } from "./user-auth-response.dto";
+import { UserAuthResponseDTO } from "./user-auth-response.dto";
 
-describe("UserAuthResponseDto", () => {
+describe("UserAuthResponseDTO", () => {
 	it("should validate a valid user auth response", () => {
 		const validData = {
 			id: "123e4567-e89b-12d3-a456-426614174000",
 			password: "Password-123",
 		};
 
-		const result = UserAuthResponseDto.safeParse(validData);
+		const result = UserAuthResponseDTO.safeParse(validData);
 		expect(result.success).toBe(true);
 	});
 
@@ -17,7 +17,7 @@ describe("UserAuthResponseDto", () => {
 			password: "Password-123",
 		};
 
-		const result = UserAuthResponseDto.safeParse(invalidData);
+		const result = UserAuthResponseDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 	});
 
@@ -27,7 +27,7 @@ describe("UserAuthResponseDto", () => {
 			// password ausente
 		};
 
-		const result = UserAuthResponseDto.safeParse(invalidData);
+		const result = UserAuthResponseDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 	});
 
@@ -37,7 +37,7 @@ describe("UserAuthResponseDto", () => {
 			password: "Password-123",
 		};
 
-		const result = UserAuthResponseDto.safeParse(invalidData);
+		const result = UserAuthResponseDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 	});
 
@@ -47,7 +47,7 @@ describe("UserAuthResponseDto", () => {
 			password: "",
 		};
 
-		const result = UserAuthResponseDto.safeParse(invalidData);
+		const result = UserAuthResponseDTO.safeParse(invalidData);
 		expect(result.success).toBe(false);
 	});
 
@@ -59,7 +59,7 @@ describe("UserAuthResponseDto", () => {
 		];
 
 		validUUIDs.forEach(uuid => {
-			const result = UserAuthResponseDto.safeParse({
+			const result = UserAuthResponseDTO.safeParse({
 				id: uuid,
 				password: "Password-123",
 			});
@@ -75,7 +75,7 @@ describe("UserAuthResponseDto", () => {
 			name: "João Silva", // Campo extra
 		};
 
-		const result = UserAuthResponseDto.safeParse(dataWithExtraFields);
+		const result = UserAuthResponseDTO.safeParse(dataWithExtraFields);
 		// Zod por padrão ignora campos extras, então será true
 		expect(result.success).toBe(true);
 		

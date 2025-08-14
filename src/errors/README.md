@@ -81,7 +81,7 @@ ErrorThrowers.notFound('Usuário não encontrado'); // throws NotFoundError
 
 // Exemplos práticos
 export class UserService {
-  async createUser(userData: CreateUserDto) {
+  async createUser(userData: CreateUserDTO) {
     // Validação
     if (!userData.email) {
       ErrorThrowers.badRequest('Email é obrigatório');

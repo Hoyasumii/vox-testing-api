@@ -1,19 +1,19 @@
 import { RepositoryBase } from "@/types";
 import {
-	CreateUserDto,
-	UpdateUserDto,
-	UserResponseDto,
-	UserAuthResponseDto,
-	GetUserByEmailDto,
+	CreateUserDTO,
+	UpdateUserDTO,
+	UserResponseDTO,
+	UserAuthResponseDTO,
+	GetUserByEmailDTO,
 } from "@/dtos/users";
 import type { uuid } from "@/dtos";
 
 export abstract class UsersRepositoryBase extends RepositoryBase {
-	abstract create(data: CreateUserDto): Promise<uuid>;
-	abstract update(id: string, data: UpdateUserDto): Promise<boolean>;
+	abstract create(data: CreateUserDTO): Promise<uuid>;
+	abstract update(id: string, data: UpdateUserDTO): Promise<boolean>;
 	abstract delete(data: uuid): Promise<boolean>;
-	abstract getById(data: uuid): Promise<UserResponseDto | null>;
+	abstract getById(data: uuid): Promise<UserResponseDTO | null>;
 	abstract getByEmail(
-		data: GetUserByEmailDto,
-	): Promise<UserAuthResponseDto | null>;
+		data: GetUserByEmailDTO,
+	): Promise<UserAuthResponseDTO | null>;
 }

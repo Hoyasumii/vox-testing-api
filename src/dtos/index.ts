@@ -1,2 +1,2 @@
 export { EnvDTO } from "./env.dto";
-export * from "./users";
+export { uuid } from "./uuid.dto";

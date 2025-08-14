@@ -52,6 +52,15 @@ Para retorno de dados do usuário (sem senha).
 - `createdAt`: Date
 - `updatedAt`: Date
 
+### UserAuthResponseDto
+Para retorno de dados de autenticação (apenas id e password).
+
+**Campos:**
+- `id`: string (UUID)
+- `password`: string
+
+**Uso:** Específico para operações de autenticação como `getByEmail` onde apenas id e password hasheado são necessários.
+
 ### GetUserByIdDto
 Para buscar usuário por ID.
 
@@ -233,6 +242,7 @@ pnpm test src/dtos/users/
 pnpm test src/dtos/users/create-user.dto.spec.ts
 pnpm test src/dtos/users/update-user.dto.spec.ts
 pnpm test src/dtos/users/user-response.dto.spec.ts
+pnpm test src/dtos/users/user-auth-response.dto.spec.ts
 pnpm test src/dtos/users/get-user-by-id.dto.spec.ts
 pnpm test src/dtos/users/get-user-by-email.dto.spec.ts
 pnpm test src/dtos/users/delete-user.dto.spec.ts
@@ -244,7 +254,8 @@ Cada DTO possui seu próprio arquivo de teste:
 
 - **create-user.dto.spec.ts** - Testa validações de criação de usuário
 - **update-user.dto.spec.ts** - Testa validações de atualização
-- **user-response.dto.spec.ts** - Testa estrutura de resposta
+- **user-response.dto.spec.ts** - Testa estrutura de resposta padrão
+- **user-auth-response.dto.spec.ts** - Testa estrutura de resposta de autenticação
 - **get-user-by-id.dto.spec.ts** - Testa validação de UUID
 - **get-user-by-email.dto.spec.ts** - Testa validação de email
 - **delete-user.dto.spec.ts** - Testa validação para deleção

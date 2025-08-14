@@ -28,6 +28,8 @@
     "@prisma/client": "6.14.0",
     "@scalar/nestjs-api-reference": "^0.5.12",
     "argon2": "^0.44.0",
+    "dotenv": "^17.2.1",
+    "jsonwebtoken": "^9.0.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "zod": "^4.0.17"
@@ -41,6 +43,7 @@
     "@swc/core": "^1.10.7",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
     "globals": "^16.0.0",

@@ -2,5 +2,6 @@ declare namespace NodeJS {
 	export interface ProcessEnv {
 		PORT: string;
 		ARGON_SECRET: string;
+		JWT_PRIVATE_KEY: string;
 	}
 }

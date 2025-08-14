@@ -1,6 +1,9 @@
 import { pathsToModuleNameMapper } from "ts-jest";
 import type { JestConfigWithTsJest } from "ts-jest";
 import { compilerOptions } from "./tsconfig.json";
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const config: JestConfigWithTsJest = {
   preset: "ts-jest/presets/default-esm",

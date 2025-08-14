@@ -1,0 +1,40 @@
+name: "Continuous Integration"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validating:
+    runs-on: "ubuntu-latest"
+
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm @10.10.0 --activate
+      
+      - name: Install Dependencies
+        run: pnpm i --frozen-lockfile
+
+      - name: Running Unit Testings
+        run: pnpm test
+      
+      - name: Running E2E Testings
+        run: pnpm test:e2e
+      
+      - name: Running NestJS Build
+        run: pnpm build

@@ -39,6 +39,22 @@ export class MemoryCache implements CacheBase {
 		return entry.value as ContentType;
 	}
 
+	async del(key: string): Promise<boolean> {
+		const entry = this.cache.get(key);
+		
+		if (!entry) {
+			return false;
+		}
+
+		// Verifica se a entrada expirou
+		if (entry.expiresAt && Date.now() > entry.expiresAt) {
+			this.cache.delete(key);
+			return false;
+		}
+
+		return this.cache.delete(key);
+	}
+
 	/**
 	 * Método adicional para testes - limpa todo o cache
 	 */

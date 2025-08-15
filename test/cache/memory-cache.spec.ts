@@ -191,6 +191,55 @@ describe("MemoryCache", () => {
 		});
 	});
 
+	describe("del", () => {
+		it("deve remover uma chave existente", async () => {
+			await cache.set("test-key", "test-value");
+			
+			expect(cache.has("test-key")).toBe(true);
+			expect(cache.size()).toBe(1);
+			
+			const result = await cache.del("test-key");
+			
+			expect(result).toBe(true);
+			expect(cache.has("test-key")).toBe(false);
+			expect(cache.size()).toBe(0);
+		});
+
+		it("deve retornar false para chave inexistente", async () => {
+			const result = await cache.del("non-existent-key");
+			
+			expect(result).toBe(false);
+		});
+
+		it("deve remover apenas a chave especificada", async () => {
+			await cache.set("key1", "value1");
+			await cache.set("key2", "value2");
+			await cache.set("key3", "value3");
+			
+			expect(cache.size()).toBe(3);
+			
+			const result = await cache.del("key2");
+			
+			expect(result).toBe(true);
+			expect(cache.size()).toBe(2);
+			expect(cache.has("key1")).toBe(true);
+			expect(cache.has("key2")).toBe(false);
+			expect(cache.has("key3")).toBe(true);
+		});
+
+		it("deve remover chave expirada e retornar false", async () => {
+			await cache.set("expiring-key", "expiring-value", 1); // 1 segundo
+			
+			// Simula a passagem do tempo
+			jest.advanceTimersByTime(1500); // 1.5 segundos
+			
+			const result = await cache.del("expiring-key");
+			
+			expect(result).toBe(false);
+			expect(cache.size()).toBe(0);
+		});
+	});
+
 	describe("cleanExpired", () => {
 		it("deve remover todas as chaves expiradas", async () => {
 			await cache.set("key1", "value1", 1); // 1 segundo

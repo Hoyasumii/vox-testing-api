@@ -1,13 +1,15 @@
 import { DeleteUserService } from "./delete-user.service";
 import { UsersRepository } from "t/repositories/users.repository";
 import { CreateUserDTO } from "@/dtos/users";
+import { MemoryCache } from "../../../test/cache/memory-cache";
 
 describe("DeleteUserService", () => {
 	let service: DeleteUserService;
 	let repository: UsersRepository;
 
 	beforeEach(() => {
-		repository = new UsersRepository();
+		const cache = new MemoryCache();
+		repository = new UsersRepository(cache);
 		service = new DeleteUserService(repository);
 	});
 

@@ -1,13 +1,15 @@
 import { GetUserContentByIdService } from "./get-user-content-by-id.service";
 import { UsersRepository } from "t/repositories/users.repository";
 import { CreateUserDTO } from "@/dtos/users";
+import { MemoryCache } from "../../../test/cache/memory-cache";
 
 describe("GetUserContentByIdService", () => {
 	let service: GetUserContentByIdService;
 	let repository: UsersRepository;
 
 	beforeEach(() => {
-		repository = new UsersRepository();
+		const cache = new MemoryCache();
+		repository = new UsersRepository(cache);
 		service = new GetUserContentByIdService(repository);
 	});
 

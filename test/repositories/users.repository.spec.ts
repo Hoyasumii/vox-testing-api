@@ -4,12 +4,14 @@ import {
 	UpdateUserDTO, 
 } from "@/dtos/users";
 import { email } from '@/dtos';
+import { MemoryCache } from "../cache/memory-cache";
 
 describe("InMemoryUsersRepository", () => {
 	let repository: UsersRepository;
 
 	beforeEach(() => {
-		repository = new UsersRepository();
+		const cache = new MemoryCache();
+		repository = new UsersRepository(cache);
 	});
 
 	describe("create", () => {

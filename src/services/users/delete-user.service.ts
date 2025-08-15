@@ -12,6 +12,8 @@ export class DeleteUserService extends Service<
 
 		if (!success) this.repository.errors.badRequest();
 
+		
+
 		return await this.repository.delete(id);
 	}
 }

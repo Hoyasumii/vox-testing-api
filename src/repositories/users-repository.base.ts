@@ -1,4 +1,4 @@
-import { RepositoryBase } from "@/types";
+import { CacheableRepositoryBase } from "@/types";
 import {
 	CreateUserDTO,
 	UpdateUserDTO,
@@ -7,7 +7,7 @@ import {
 } from "@/dtos/users";
 import type { email, uuid } from "@/dtos";
 
-export abstract class UsersRepositoryBase extends RepositoryBase {
+export abstract class UsersRepositoryBase extends CacheableRepositoryBase {
 	abstract create(data: CreateUserDTO): Promise<uuid>;
 	abstract update(id: string, data: UpdateUserDTO): Promise<boolean>;
 	abstract delete(data: uuid): Promise<boolean>;

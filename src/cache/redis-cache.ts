@@ -10,19 +10,17 @@ export class RedisCache implements CacheBase {
 		ex?: number,
 	): Promise<void> {
 		if (ex) {
-			if (ex) {
-				await redis!.set(key, value, "EX", ex);
-			} else {
-				await redis!.set(key, value);
-			}
-
-			return;
+			await redis!.set(key, value, "EX", ex);
+		} else {
+			await redis!.set(key, value);
 		}
-
-		await redis!.set(key, value);
 	}
 
 	async get<ContentType = unknown>(key: string): Promise<ContentType | null> {
 		return (await redis!.get(key)) as ContentType;
+	}
+
+	async del(key: string): Promise<boolean> {
+		return (await redis!.del(key)) === 1;
 	}
 }

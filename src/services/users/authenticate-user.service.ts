@@ -19,16 +19,14 @@ export class AuthenticateUserService extends Service<
 
 		const userAuthData = await this.repository.getByEmail(data.email);
 
-		if (!userAuthData)
-			return this.repository.errors.notFound("Usuário não encontrado");
+		if (!userAuthData) return this.repository.errors.badRequest();
 
 		const isPasswordValid = await hasher.verify(
 			userAuthData.password,
 			data.password,
 		);
 
-		if (!isPasswordValid)
-			return this.repository.errors.unauthorized("Credenciais inválidas");
+		if (!isPasswordValid) return this.repository.errors.badRequest();
 
 		return await jwt.run({ userId: userAuthData.id });
 	}

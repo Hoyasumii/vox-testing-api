@@ -4,12 +4,14 @@ import {
 	UpdateDoctorAvailabilityDTO,
 } from "@/dtos/doctors-availability";
 import { randomUUID } from "node:crypto";
+import { MemoryCache } from "t/cache";
 
 describe("InMemoryDoctorsAvailabilityRepository", () => {
 	let repository: DoctorsAvailabilityRepository;
 
 	beforeEach(() => {
-		repository = new DoctorsAvailabilityRepository();
+		const cache = new MemoryCache()
+		repository = new DoctorsAvailabilityRepository(cache);
 	});
 
 	describe("create", () => {

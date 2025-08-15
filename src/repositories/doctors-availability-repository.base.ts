@@ -4,12 +4,14 @@ import type {
 	DoctorAvailabilityDTO,
 	UpdateDoctorAvailabilityDTO,
 } from "@/dtos/doctors-availability";
-import { RepositoryBase } from "@/types";
+import { CacheableRepositoryBase } from "@/types";
 
-export abstract class DoctorsAvailabilityRepositoryBase extends RepositoryBase {
+export abstract class DoctorsAvailabilityRepositoryBase extends CacheableRepositoryBase {
 	abstract create(data: CreateDoctorAvailabilityDTO): Promise<void>;
+	// TODO: Cache
 	abstract findByDoctorId(id: uuid): Promise<Array<DoctorAvailabilityDTO>>;
 	abstract deleteById(id: uuid): Promise<boolean>;
+	// TODO: Remove Cache
 	abstract deleteByDoctorId(id: uuid): Promise<number>;
 	abstract update(
 		id: uuid,

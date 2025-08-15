@@ -1,13 +1,15 @@
 import { UpdateDoctorAvailabilityService } from "./update-doctor-availability.service";
 import { DoctorsAvailabilityRepository } from "../../../test/repositories/doctors-availability.repository";
 import type { CreateDoctorAvailabilityDTO, UpdateDoctorAvailabilityDTO } from "@/dtos/doctors-availability";
+import { MemoryCache } from "../../../test/cache/memory-cache";
 
 describe("UpdateDoctorAvailabilityService", () => {
 	let service: UpdateDoctorAvailabilityService;
 	let repository: DoctorsAvailabilityRepository;
 
 	beforeEach(() => {
-		repository = new DoctorsAvailabilityRepository();
+		const cache = new MemoryCache();
+		repository = new DoctorsAvailabilityRepository(cache);
 		service = new UpdateDoctorAvailabilityService(repository);
 	});
 

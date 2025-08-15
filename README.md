@@ -1,5 +1,5 @@
-- [ ] Implementar o Doctor
-- [ ] Implementar o Doctor Availability
+- [x] Implementar o Doctor
+- [x] Implementar o Doctor Availability
 - [ ] Adicionar o CacheableRepository
 - [ ] Colocar o PUB/SUB como handler no RepositoryBase
 - [ ] Implementar o Schedule

@@ -19,7 +19,7 @@ describe("CreateDoctorAvailabilityDTO", () => {
 				doctorId: "123e4567-e89b-12d3-a456-426614174000",
 				dayOfWeek: 0,
 				startHour: 0,
-				endHour: 0,
+				endHour: 1, // endHour must be greater than startHour
 			};
 
 			const result = CreateDoctorAvailabilityDTO.safeParse(validData);
@@ -30,7 +30,7 @@ describe("CreateDoctorAvailabilityDTO", () => {
 			const validData = {
 				doctorId: "123e4567-e89b-12d3-a456-426614174000",
 				dayOfWeek: 6,
-				startHour: 23,
+				startHour: 22, // max is now 22
 				endHour: 23,
 			};
 
@@ -88,11 +88,11 @@ describe("CreateDoctorAvailabilityDTO", () => {
 			expect(result.success).toBe(false);
 		});
 
-		it("should reject startHour greater than 23", () => {
+		it("should reject startHour greater than 22", () => {
 			const invalidData = {
 				doctorId: "123e4567-e89b-12d3-a456-426614174000",
 				dayOfWeek: 1,
-				startHour: 24,
+				startHour: 23, // Invalid: should be 0-22
 				endHour: 17,
 			};
 
@@ -141,6 +141,30 @@ describe("CreateDoctorAvailabilityDTO", () => {
 				dayOfWeek: 1.5,
 				startHour: 8,
 				endHour: 17,
+			};
+
+			const result = CreateDoctorAvailabilityDTO.safeParse(invalidData);
+			expect(result.success).toBe(false);
+		});
+
+		it("should reject when endHour is not greater than startHour", () => {
+			const invalidData = {
+				doctorId: "123e4567-e89b-12d3-a456-426614174000",
+				dayOfWeek: 1,
+				startHour: 15,
+				endHour: 10, // Invalid: endHour should be greater than startHour
+			};
+
+			const result = CreateDoctorAvailabilityDTO.safeParse(invalidData);
+			expect(result.success).toBe(false);
+		});
+
+		it("should reject when endHour equals startHour", () => {
+			const invalidData = {
+				doctorId: "123e4567-e89b-12d3-a456-426614174000",
+				dayOfWeek: 1,
+				startHour: 15,
+				endHour: 15, // Invalid: endHour should be greater than startHour
 			};
 
 			const result = CreateDoctorAvailabilityDTO.safeParse(invalidData);

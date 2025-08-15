@@ -51,7 +51,7 @@ describe("UpdateDoctorAvailabilityDTO", () => {
 			const validData = {
 				dayOfWeek: 0,
 				startHour: 0,
-				endHour: 0,
+				endHour: 1, // endHour must be greater than startHour when both are provided
 			};
 
 			const result = UpdateDoctorAvailabilityDTO.safeParse(validData);
@@ -61,7 +61,7 @@ describe("UpdateDoctorAvailabilityDTO", () => {
 		it("should validate maximum boundary values", () => {
 			const validData = {
 				dayOfWeek: 6,
-				startHour: 23,
+				startHour: 22, // max is now 22
 				endHour: 23,
 			};
 
@@ -98,9 +98,9 @@ describe("UpdateDoctorAvailabilityDTO", () => {
 			expect(result.success).toBe(false);
 		});
 
-		it("should reject startHour greater than 23", () => {
+		it("should reject startHour greater than 22", () => {
 			const invalidData = {
-				startHour: 24,
+				startHour: 23, // Invalid: should be 0-22
 			};
 
 			const result = UpdateDoctorAvailabilityDTO.safeParse(invalidData);
@@ -143,6 +143,44 @@ describe("UpdateDoctorAvailabilityDTO", () => {
 
 			const result = UpdateDoctorAvailabilityDTO.safeParse(invalidData);
 			expect(result.success).toBe(false);
+		});
+
+		it("should reject when both startHour and endHour are provided and endHour is not greater than startHour", () => {
+			const invalidData = {
+				startHour: 15,
+				endHour: 10, // Invalid: endHour should be greater than startHour
+			};
+
+			const result = UpdateDoctorAvailabilityDTO.safeParse(invalidData);
+			expect(result.success).toBe(false);
+		});
+
+		it("should reject when both startHour and endHour are provided and they are equal", () => {
+			const invalidData = {
+				startHour: 15,
+				endHour: 15, // Invalid: endHour should be greater than startHour
+			};
+
+			const result = UpdateDoctorAvailabilityDTO.safeParse(invalidData);
+			expect(result.success).toBe(false);
+		});
+
+		it("should allow updating only startHour without endHour", () => {
+			const validData = {
+				startHour: 10,
+			};
+
+			const result = UpdateDoctorAvailabilityDTO.safeParse(validData);
+			expect(result.success).toBe(true);
+		});
+
+		it("should allow updating only endHour without startHour", () => {
+			const validData = {
+				endHour: 18,
+			};
+
+			const result = UpdateDoctorAvailabilityDTO.safeParse(validData);
+			expect(result.success).toBe(true);
 		});
 	});
 });

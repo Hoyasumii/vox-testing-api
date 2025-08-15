@@ -2,6 +2,7 @@ import { UpdateDoctorAvailabilityService } from "./update-doctor-availability.se
 import { DoctorsAvailabilityRepository } from "../../../test/repositories/doctors-availability.repository";
 import type { CreateDoctorAvailabilityDTO, UpdateDoctorAvailabilityDTO } from "@/dtos/doctors-availability";
 import { MemoryCache } from "../../../test/cache/memory-cache";
+import { NotFoundError } from "@/errors";
 
 describe("UpdateDoctorAvailabilityService", () => {
 	let service: UpdateDoctorAvailabilityService;
@@ -90,9 +91,7 @@ describe("UpdateDoctorAvailabilityService", () => {
 				dayOfWeek: 2,
 			};
 
-			const result = await service.run({ id: nonExistentId, content: updateData });
-
-			expect(result).toBe(false);
+			await expect(service.run({ id: nonExistentId, content: updateData })).rejects.toBeInstanceOf(NotFoundError);
 		});
 
 		it("should throw BadRequestError when id is invalid", async () => {

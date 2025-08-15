@@ -2,6 +2,7 @@ import { DeleteDoctorAvailabilityByIdService } from "./delete-doctor-availabilit
 import { DoctorsAvailabilityRepository } from "../../../test/repositories/doctors-availability.repository";
 import type { CreateDoctorAvailabilityDTO } from "@/dtos/doctors-availability";
 import { MemoryCache } from "../../../test/cache/memory-cache";
+import { NotFoundError } from "@/errors";
 
 describe("DeleteDoctorAvailabilityByIdService", () => {
 	let service: DeleteDoctorAvailabilityByIdService;
@@ -44,10 +45,8 @@ describe("DeleteDoctorAvailabilityByIdService", () => {
 		it("should return false when trying to delete non-existent availability", async () => {
 			const nonExistentId = "550e8400-e29b-41d4-a716-446655440000";
 
-			const result = await service.run(nonExistentId);
+			await expect(service.run(nonExistentId)).rejects.toBeInstanceOf(NotFoundError);
 
-			expect(result).toBe(false);
-			expect(repository.count()).toBe(0);
 		});
 
 		it("should throw BadRequestError when id is invalid", async () => {

@@ -12,7 +12,7 @@ export class DeleteUserService extends Service<
 
 		if (!success) this.repository.errors.badRequest();
 
-		
+		await this.repository.cache.del(`user-${id}`);
 
 		return await this.repository.delete(id);
 	}

@@ -5,6 +5,8 @@ import { Service } from "@/types";
 import { PasswordHasher } from "@/utils";
 import z from "zod";
 
+// TODO: Caso seja registrado como médico, enviar a mensagem para criar um médico
+
 export class CreateUserService extends Service<
 	UsersRepositoryBase,
 	CreateUserDTO,

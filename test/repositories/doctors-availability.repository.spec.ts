@@ -4,7 +4,7 @@ import {
 	UpdateDoctorAvailabilityDTO,
 } from "@/dtos/doctors-availability";
 import { randomUUID } from "node:crypto";
-import { MemoryCache } from "t/cache";
+import { MemoryCache } from "../cache";
 
 describe("InMemoryDoctorsAvailabilityRepository", () => {
 	let repository: DoctorsAvailabilityRepository;
@@ -155,6 +155,67 @@ describe("InMemoryDoctorsAvailabilityRepository", () => {
 		});
 	});
 
+	describe("findById (interface pública)", () => {
+		it("deve retornar null quando disponibilidade não existe", async () => {
+			const nonExistentId = randomUUID();
+			
+			const result = await repository.findById(nonExistentId);
+			
+			expect(result).toBeNull();
+		});
+
+		it("deve retornar disponibilidade por ID", async () => {
+			const doctorId = randomUUID();
+			
+			await repository.create({
+				doctorId,
+				dayOfWeek: 1,
+				startHour: 8,
+				endHour: 12,
+			});
+
+			const availabilities = repository.findAll();
+			const availabilityId = availabilities[0].id;
+			
+			const result = await repository.findById(availabilityId);
+			
+			expect(result).toMatchObject({
+				id: availabilityId,
+				doctorId,
+				dayOfWeek: 1,
+				startHour: 8,
+				endHour: 12,
+			});
+		});
+
+		it("deve retornar tipo DoctorAvailabilityDTO", async () => {
+			const doctorId = randomUUID();
+			
+			await repository.create({
+				doctorId,
+				dayOfWeek: 1,
+				startHour: 8,
+				endHour: 12,
+			});
+
+			const availabilities = repository.findAll();
+			const availabilityId = availabilities[0].id;
+			
+			const result = await repository.findById(availabilityId);
+			
+			expect(result).toHaveProperty("id");
+			expect(result).toHaveProperty("doctorId");
+			expect(result).toHaveProperty("dayOfWeek");
+			expect(result).toHaveProperty("startHour");
+			expect(result).toHaveProperty("endHour");
+			expect(typeof result?.id).toBe("string");
+			expect(typeof result?.doctorId).toBe("string");
+			expect(typeof result?.dayOfWeek).toBe("number");
+			expect(typeof result?.startHour).toBe("number");
+			expect(typeof result?.endHour).toBe("number");
+		});
+	});
+
 	describe("deleteById", () => {
 		it("deve retornar false quando tentar deletar disponibilidade inexistente", async () => {
 			const nonExistentId = randomUUID();
@@ -208,7 +269,7 @@ describe("InMemoryDoctorsAvailabilityRepository", () => {
 			expect(result).toBe(true);
 			expect(repository.count()).toBe(1);
 			
-			const remainingAvailability = repository.findById(firstAvailabilityId);
+			const remainingAvailability = repository.findByIdSync(firstAvailabilityId);
 			expect(remainingAvailability).toBeNull();
 		});
 	});
@@ -337,7 +398,7 @@ describe("InMemoryDoctorsAvailabilityRepository", () => {
 			
 			expect(result).toBe(true);
 			
-			const updatedAvailability = repository.findById(availabilityId);
+			const updatedAvailability = repository.findByIdSync(availabilityId);
 			expect(updatedAvailability).toMatchObject({
 				id: availabilityId,
 				doctorId,
@@ -368,7 +429,7 @@ describe("InMemoryDoctorsAvailabilityRepository", () => {
 			
 			expect(result).toBe(true);
 			
-			const updatedAvailability = repository.findById(availabilityId);
+			const updatedAvailability = repository.findByIdSync(availabilityId);
 			expect(updatedAvailability).toMatchObject({
 				id: availabilityId,
 				doctorId,
@@ -398,7 +459,7 @@ describe("InMemoryDoctorsAvailabilityRepository", () => {
 			
 			await repository.update(availabilityId, updateData);
 			
-			const updatedAvailability = repository.findById(availabilityId);
+			const updatedAvailability = repository.findByIdSync(availabilityId);
 			expect(updatedAvailability?.id).toBe(originalAvailability.id);
 			expect(updatedAvailability?.doctorId).toBe(originalAvailability.doctorId);
 			expect(updatedAvailability?.dayOfWeek).toBe(originalAvailability.dayOfWeek);
@@ -461,12 +522,12 @@ describe("InMemoryDoctorsAvailabilityRepository", () => {
 			});
 		});
 
-		describe("findById", () => {
+		describe("findByIdSync", () => {
 			it("deve retornar disponibilidade por ID", () => {
 				const all = repository.findAll();
 				const firstId = all[0].id;
 				
-				const found = repository.findById(firstId);
+				const found = repository.findByIdSync(firstId);
 				
 				expect(found).toEqual(all[0]);
 			});
@@ -474,7 +535,7 @@ describe("InMemoryDoctorsAvailabilityRepository", () => {
 			it("deve retornar null para ID inexistente", () => {
 				const nonExistentId = randomUUID();
 				
-				const found = repository.findById(nonExistentId);
+				const found = repository.findByIdSync(nonExistentId);
 				
 				expect(found).toBeNull();
 			});

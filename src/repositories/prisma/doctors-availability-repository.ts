@@ -12,6 +12,12 @@ export class DoctorsAvailabilityRepository extends DoctorsAvailabilityRepository
 		await prisma.doctorAvailability.create({ data });
 	}
 
+	async findById(id: uuid): Promise<DoctorAvailabilityDTO | null> {
+		return await prisma.doctorAvailability.findUnique({
+			where: { id },
+		});
+	}
+
 	async findByDoctorId(id: uuid): Promise<Array<DoctorAvailabilityDTO>> {
 		return await prisma.doctorAvailability.findMany({
 			where: { doctorId: id },

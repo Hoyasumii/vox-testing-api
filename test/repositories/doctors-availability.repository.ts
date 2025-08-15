@@ -88,6 +88,23 @@ export class DoctorsAvailabilityRepository extends DoctorsAvailabilityRepository
 		return true;
 	}
 
+	// Implementação do método da classe abstrata
+	async findById(id: uuid): Promise<DoctorAvailabilityDTO | null> {
+		const availability = this.availabilities.find((availability) => availability.id === id);
+		
+		if (!availability) {
+			return null;
+		}
+
+		return {
+			id: availability.id,
+			doctorId: availability.doctorId,
+			dayOfWeek: availability.dayOfWeek,
+			startHour: availability.startHour,
+			endHour: availability.endHour,
+		};
+	}
+
 	// Métodos auxiliares para testes
 	clear(): void {
 		this.availabilities = [];
@@ -101,7 +118,8 @@ export class DoctorsAvailabilityRepository extends DoctorsAvailabilityRepository
 		return [...this.availabilities];
 	}
 
-	findById(id: uuid): InMemoryDoctorAvailability | null {
+	// Método auxiliar síncrono para testes (diferente nome para evitar conflito)
+	findByIdSync(id: uuid): InMemoryDoctorAvailability | null {
 		return this.availabilities.find((availability) => availability.id === id) || null;
 	}
 }

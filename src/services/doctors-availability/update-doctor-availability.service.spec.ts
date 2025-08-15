@@ -42,7 +42,7 @@ describe("UpdateDoctorAvailabilityService", () => {
 
 			expect(result).toBe(true);
 
-			const updatedAvailability = repository.findById(availabilityId);
+			const updatedAvailability = repository.findByIdSync(availabilityId);
 			expect(updatedAvailability).toMatchObject({
 				id: availabilityId,
 				doctorId,
@@ -74,7 +74,7 @@ describe("UpdateDoctorAvailabilityService", () => {
 
 			expect(result).toBe(true);
 
-			const updatedAvailability = repository.findById(availabilityId);
+			const updatedAvailability = repository.findByIdSync(availabilityId);
 			expect(updatedAvailability).toMatchObject({
 				id: availabilityId,
 				doctorId,
@@ -128,7 +128,7 @@ describe("UpdateDoctorAvailabilityService", () => {
 			})).rejects.toThrow("Bad request");
 
 			// Verify data remains unchanged
-			const availability = repository.findById(availabilityId);
+			const availability = repository.findByIdSync(availabilityId);
 			expect(availability).toMatchObject({
 				doctorId,
 				dayOfWeek: 1,
@@ -170,7 +170,7 @@ describe("UpdateDoctorAvailabilityService", () => {
 			expect(result).toBe(true);
 
 			// Verify data remains unchanged when no fields are provided
-			const availability = repository.findById(availabilityId);
+			const availability = repository.findByIdSync(availabilityId);
 			expect(availability).toMatchObject({
 				doctorId,
 				dayOfWeek: 1,

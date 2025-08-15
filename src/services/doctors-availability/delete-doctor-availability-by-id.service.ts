@@ -12,6 +12,10 @@ export class DeleteDoctorAvailabilityByIdService extends Service<
 
 		if (!success) return this.repository.errors.badRequest();
 
+		// await this.repository.
+
+		// await this.repository.cache.del(`doctor-availabi/lity-${data.doctorId}`);
+
 		return await this.repository.deleteById(id);
 	}
 }

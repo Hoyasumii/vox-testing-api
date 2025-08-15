@@ -38,7 +38,7 @@ describe("DeleteDoctorAvailabilityByIdService", () => {
 
 			expect(result).toBe(true);
 			expect(repository.count()).toBe(0);
-			expect(repository.findById(availabilityId)).toBeNull();
+			expect(repository.findByIdSync(availabilityId)).toBeNull();
 		});
 
 		it("should return false when trying to delete non-existent availability", async () => {
@@ -105,7 +105,7 @@ describe("DeleteDoctorAvailabilityByIdService", () => {
 
 			expect(result).toBe(true);
 			expect(repository.count()).toBe(2);
-			expect(repository.findById(targetId)).toBeNull();
+			expect(repository.findByIdSync(targetId)).toBeNull();
 
 			// Verify other availabilities still exist
 			const remainingAvailabilities = repository.findAll();

@@ -12,6 +12,12 @@ export class DeleteDoctorService extends Service<
 
 		if (!success) return this.repository.errors.badRequest();
 
-		return await this.repository.deleteById(id);
+		const doctorIsRemoved = await this.repository.deleteById(id);
+
+		if (doctorIsRemoved) {
+			await this.repository.cache.del(`doctor-${id}`);
+		}
+
+		return doctorIsRemoved;
 	}
 }

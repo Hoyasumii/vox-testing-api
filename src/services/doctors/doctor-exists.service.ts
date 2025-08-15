@@ -9,9 +9,18 @@ export class DoctorExistsService extends Service<
 > {
 	async run(id: uuid): Promise<boolean> {
 		const { success } = uuid.safeParse(id);
+		const ex = 60 * 60 * 24;
 
 		if (!success) return this.repository.errors.badRequest();
 
-		return await this.repository.exists(id);
+		const cachedDoctorId = await this.repository.cache.get<1>(`doctor-${id}`);
+
+		const doctorId = cachedDoctorId ? true : await this.repository.exists(id);
+
+		if (!cachedDoctorId) {
+			await this.repository.cache.set(`doctor-${id}`, 1, ex);
+		}
+
+		return doctorId;
 	}
 }

@@ -1,8 +1,10 @@
+import { RedisCache } from "@/cache";
 import { DoctorsRepository } from "@/repositories/prisma";
 import { CreateDoctorService } from "@/services/doctors";
 
 export function makeCreateDoctorFactory() {
-	const repository = new DoctorsRepository();
+	const cache = new RedisCache();
+	const repository = new DoctorsRepository(cache);
 
 	return new CreateDoctorService(repository);
 }

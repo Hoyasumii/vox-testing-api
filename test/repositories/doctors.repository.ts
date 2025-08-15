@@ -9,7 +9,6 @@ interface InMemoryDoctor {
 
 export class DoctorsRepository extends DoctorsRepositoryBase {
 	private doctors: InMemoryDoctor[] = [];
-
 	async create(id: uuid): Promise<void> {
 		const now = new Date();
 

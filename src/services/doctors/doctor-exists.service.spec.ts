@@ -1,12 +1,15 @@
 import { DoctorExistsService } from "./doctor-exists.service";
 import { DoctorsRepository } from "../../../test/repositories/doctors.repository";
+import { MemoryCache } from "../../../test/cache";
 
 describe("DoctorExistsService", () => {
 	let service: DoctorExistsService;
 	let repository: DoctorsRepository;
+	let cache: MemoryCache;
 
 	beforeEach(() => {
-		repository = new DoctorsRepository();
+		cache = new MemoryCache();
+		repository = new DoctorsRepository(cache);
 		service = new DoctorExistsService(repository);
 	});
 

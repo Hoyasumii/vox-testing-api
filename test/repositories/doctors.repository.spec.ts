@@ -1,15 +1,19 @@
 import { randomUUID } from "node:crypto";
 import { DoctorsRepository } from "./doctors.repository";
+import { MemoryCache } from "../cache";
 
 describe("DoctorsRepository", () => {
 	let repository: DoctorsRepository;
+	let cache: MemoryCache;
 
 	beforeEach(() => {
-		repository = new DoctorsRepository();
+		cache = new MemoryCache();
+		repository = new DoctorsRepository(cache);
 	});
 
 	afterEach(() => {
 		repository.clear();
+		cache.clear();
 	});
 
 	describe("create", () => {

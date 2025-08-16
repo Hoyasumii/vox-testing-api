@@ -1,4 +1,3 @@
-import { EmptyRepository } from "@/repositories";
 import { RefreshJwtToken } from "./refresh-jwt-token";
 import * as jwt from "jsonwebtoken";
 
@@ -6,8 +5,7 @@ let service: RefreshJwtToken;
 
 describe("Refresh JWT Token Service", () => {
   beforeEach(() => {
-    const repo = new EmptyRepository();
-    service = new RefreshJwtToken(repo);
+    service = new RefreshJwtToken();
   });
 
   it("should refresh a token", async () => {

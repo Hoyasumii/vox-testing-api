@@ -1,12 +1,10 @@
-import { EmptyRepository } from "@/repositories";
 import { SignJwtToken } from "./sign-jwt-token";
 
 let service: SignJwtToken;
 
 describe("Sign JWT Token Service", () => {
   beforeEach(() => {
-    const repo = new EmptyRepository();
-    service = new SignJwtToken(repo);
+    service = new SignJwtToken();
   });
 
   it("should sign a token", async () => {

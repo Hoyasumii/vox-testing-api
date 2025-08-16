@@ -1,4 +1,3 @@
-import { EmptyRepository } from "@/repositories";
 import { VerifyJwtToken } from "./verify-jwt-token";
 import * as jwt from "jsonwebtoken";
 
@@ -6,8 +5,7 @@ let service: VerifyJwtToken;
 
 describe("Verify JWT Token Service", () => {
   beforeEach(() => {
-    const repo = new EmptyRepository();
-    service = new VerifyJwtToken(repo);
+    service = new VerifyJwtToken();
   });
 
   it("should verify a token", async () => {

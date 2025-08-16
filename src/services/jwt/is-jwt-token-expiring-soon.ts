@@ -1,8 +1,6 @@
-import type { EmptyRepository } from "@/repositories";
-import { Service } from "@/types";
 import * as jwt from "jsonwebtoken";
 
-export class IsJwtTokenExpiringSoon extends Service<EmptyRepository, string, boolean> {
+export class IsJwtTokenExpiringSoon {
 	public limitTime = 60 * 15;
 
 	public async run(token: string): Promise<boolean> {

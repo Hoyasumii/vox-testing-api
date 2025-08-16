@@ -1,8 +1,6 @@
-import type { EmptyRepository } from "@/repositories";
-import { Service } from "@/types";
 import * as jwt from "jsonwebtoken";
 
-export class RefreshJwtToken extends Service<EmptyRepository, string, string> {
+export class RefreshJwtToken {
 	public async run(token: string): Promise<string> {
 		const currentToken = jwt.verify(
 			token,

@@ -1,4 +1,3 @@
-import { EmptyRepository } from "@/repositories";
 import { IsJwtTokenExpiringSoon } from "./is-jwt-token-expiring-soon";
 import * as jwt from "jsonwebtoken";
 
@@ -6,8 +5,7 @@ let service: IsJwtTokenExpiringSoon;
 
 describe("Is JWT Token Expiring Soon Service", () => {
   beforeEach(() => {
-    const repo = new EmptyRepository();
-    service = new IsJwtTokenExpiringSoon(repo);
+    service = new IsJwtTokenExpiringSoon();
   });
 
   it("should return true if exp is near to expire", async () => {

@@ -80,5 +80,6 @@ model Schedule {
 
   @@index([patientId])
   @@index([doctorId, scheduledAt])
+  @@index([patientId, scheduledAt])
   @@map("schedules")
 }

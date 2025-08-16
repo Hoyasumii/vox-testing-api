@@ -1,7 +1,4 @@
-import type { EmptyRepository } from "@/repositories";
-import { Service } from "@/types";
-
-export class HelloWorldService extends Service<EmptyRepository, never, string> {
+export class HelloWorldService {
 	async run() {
 		return "Hello World!";
 	}

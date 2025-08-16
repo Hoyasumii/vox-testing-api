@@ -1,3 +1,4 @@
+import type { uuid } from "@/dtos";
 import { CreateDoctorAvailabilityDTO } from "@/dtos/doctors-availability";
 import type { DoctorsAvailabilityRepositoryBase } from "@/repositories";
 import { Service } from "@/types";
@@ -12,7 +13,12 @@ export class CreateDoctorAvailabilityService extends Service<
 
 		if (!success) return this.repository.errors.badRequest();
 
-		// TODO: Mandar MSG para Doctor para ver se o id existe
+		const doctorExists = await this.repository.channel.talk<uuid, boolean>(
+			"doctor:exists",
+			data.doctorId,
+		);
+
+		if (!doctorExists) return this.repository.errors.notFound();
 
 		try {
 			await this.repository.create(data);

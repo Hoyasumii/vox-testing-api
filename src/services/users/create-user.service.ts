@@ -5,8 +5,6 @@ import { Service } from "@/types";
 import { PasswordHasher } from "@/utils";
 import z from "zod";
 
-// TODO: Caso seja registrado como médico, enviar a mensagem para criar um médico
-
 export class CreateUserService extends Service<
 	UsersRepositoryBase,
 	CreateUserDTO,
@@ -24,7 +22,16 @@ export class CreateUserService extends Service<
 		data.password = await hasher.hash(data.password);
 
 		try {
-			return await this.repository.create(data);
+			const userId = await this.repository.create(data);
+
+			if (data.type === "DOCTOR") {
+				await this.repository.channel.talk<uuid, boolean>(
+					"doctor:create",
+					userId,
+				);
+			}
+
+			return userId;
 		} catch (_) {
 			return this.repository.errors.internalServer();
 		}

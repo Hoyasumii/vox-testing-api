@@ -1,13 +1,10 @@
 import { HelloWorldService } from "./hello-world.service";
-import { EmptyRepository } from "@/repositories";
 
 describe("HelloWorldService", () => {
 	let service: HelloWorldService;
-	let repository: EmptyRepository;
 
 	beforeEach(() => {
-		repository = new EmptyRepository();
-		service = new HelloWorldService(repository);
+		service = new HelloWorldService();
 	});
 
 	describe("run", () => {

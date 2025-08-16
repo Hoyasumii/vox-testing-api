@@ -1,7 +1,7 @@
 - [x] Implementar o Doctor
 - [x] Implementar o Doctor Availability
 - [x] Adicionar o CacheableRepository
-- [ ] Colocar o PUB/SUB como handler no RepositoryBase
+- [x] Colocar o PUB/SUB como handler no RepositoryBase
+- [x] Ajeitar o Cache na camada de Serviços
 - [ ] Implementar o Schedule
-- [ ] Ajeitar o Cache na camada de Serviços
-- [ ] Criar o sistema de mensageria na camada de Serviços
+- [x] Criar o sistema de mensageria na camada de Serviços

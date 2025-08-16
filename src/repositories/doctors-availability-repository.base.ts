@@ -4,9 +4,9 @@ import type {
 	DoctorAvailabilityDTO,
 	UpdateDoctorAvailabilityDTO,
 } from "@/dtos/doctors-availability";
-import { CacheableRepositoryBase } from "@/types";
+import { RepositoryBase } from "@/types";
 
-export abstract class DoctorsAvailabilityRepositoryBase extends CacheableRepositoryBase {
+export abstract class DoctorsAvailabilityRepositoryBase extends RepositoryBase {
 	// TODO: Remove Cache
 	abstract create(data: CreateDoctorAvailabilityDTO): Promise<void>;
 	// TODO: Cache

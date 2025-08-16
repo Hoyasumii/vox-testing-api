@@ -18,6 +18,18 @@ jest.mock("@/cache", () => ({
 	RedisCache: jest.fn().mockImplementation(() => new MemoryCache()),
 }));
 
+jest.mock("@/channels", () => ({
+	__esModule: true,
+	default: {
+		"doctor:create": jest.fn(),
+		"doctor:exists": jest.fn(),
+		"jwt:is-expiring-soon": jest.fn(),
+		"jwt:refresh": jest.fn(),
+		"jwt:sign": jest.fn(),
+		"jwt:verify": jest.fn(),
+	},
+}));
+
 describe("makeUpdateUserFactory", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -31,12 +43,15 @@ describe("makeUpdateUserFactory", () => {
 		expect(service).toBeInstanceOf(UpdateUserService);
 	});
 
-	it("deve usar o UsersRepository do Prisma com cache", () => {
+	it("deve usar o UsersRepository do Prisma com cache e channels", () => {
+		// Arrange
+		const mockChannels = require("@/channels").default;
+
 		// Act
 		makeUpdateUserFactory();
 
 		// Assert
 		expect(UsersRepository).toHaveBeenCalledTimes(1);
-		expect(UsersRepository).toHaveBeenCalledWith(expect.any(MemoryCache));
+		expect(UsersRepository).toHaveBeenCalledWith(expect.any(MemoryCache), mockChannels);
 	});
 });

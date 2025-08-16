@@ -1,22 +1,34 @@
 import type { uuid } from "@/dtos";
+import type {
+	AvailableSlotResponseDTO,
+	CreateScheduleDTO,
+	ScheduleResponseDTO,
+} from "@/dtos/schedules";
 import { RepositoryBase } from "@/types";
 
 export abstract class ScheduleRepositoryBase extends RepositoryBase {
-  // TODO: Ver se o patientId existe
-  // TODO: Ver se o doctorId existe
-  // TODO: Ver se o availabilityId existe
-  // TODO: Ver se doctorId tem disponibilidade(com base no scheduledAt)
-  // TODO: Ver se o patientId tem disponibilidade(com base no scheduledAt)
-  abstract create(): void;
-  abstract findById(scheduleId: uuid): void;
-  abstract findByPatientId(patientId: uuid): void;
-  abstract findByDoctorId(doctorId: uuid): void;
-  abstract delete(): void;
+	// TODO: Ver se o patientId existe
+	// TODO: Ver se o doctorId existe
+	// TODO: Ver se o availabilityId existe
+	// TODO: Ver se doctorId tem disponibilidade(com base no scheduledAt)
+	// TODO: Ver se o patientId tem disponibilidade(com base no scheduledAt)
+	abstract create(data: CreateScheduleDTO): Promise<ScheduleResponseDTO>;
+	abstract findById(scheduleId: uuid): Promise<ScheduleResponseDTO | null>;
+	abstract findByPatientId(
+		patientId: uuid,
+	): Promise<Array<ScheduleResponseDTO>>;
+	abstract findByDoctorId(doctorId: uuid): Promise<Array<ScheduleResponseDTO>>;
+	abstract delete(sheduleId: uuid): Promise<boolean>;
 
-  abstract getAvailableSlots(doctorId: uuid): void;
+	abstract getAvailableSlots(
+		doctorId: uuid,
+	): Promise<Array<AvailableSlotResponseDTO>>;
 
-  abstract isDoctorAvailable(doctorId: uuid, targetDate: Date): void;
+	abstract isDoctorAvailable(
+		doctorId: uuid,
+		targetDate: Date,
+	): Promise<boolean>;
 
-  abstract cancel(scheduleId: uuid): void;
-  abstract complete(scheduleId: uuid): void;
+	abstract cancel(scheduleId: uuid): Promise<boolean>;
+	abstract complete(scheduleId: uuid): Promise<boolean>;
 }

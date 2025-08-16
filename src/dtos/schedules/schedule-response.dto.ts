@@ -8,9 +8,7 @@ export const ScheduleResponseDTO = z.object({
 	availabilityId: uuid,
 	patientId: uuid,
 	doctorId: uuid,
-	scheduledAt: z.date(),
-	createdAt: z.date().optional(),
-	updatedAt: z.date().optional(),
+	scheduledAt: z.date()
 });
 
 export type ScheduleResponseDTO = z.infer<typeof ScheduleResponseDTO>;

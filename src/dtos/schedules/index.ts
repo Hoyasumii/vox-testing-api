@@ -1,12 +1,4 @@
 export { ScheduleStatus } from "./schedule-types";
 export { CreateScheduleDTO } from "./create-schedule.dto";
-export { FindScheduleByIdDTO } from "./find-schedule-by-id.dto";
-export { FindSchedulesByPatientIdDTO } from "./find-schedules-by-patient-id.dto";
-export { FindSchedulesByDoctorIdDTO } from "./find-schedules-by-doctor-id.dto";
-export { DeleteScheduleDTO } from "./delete-schedule.dto";
-export { GetAvailableSlotsDTO } from "./get-available-slots.dto";
-export { IsDoctorAvailableDTO } from "./is-doctor-available.dto";
-export { CancelScheduleDTO } from "./cancel-schedule.dto";
-export { CompleteScheduleDTO } from "./complete-schedule.dto";
 export { ScheduleResponseDTO } from "./schedule-response.dto";
 export { AvailableSlotResponseDTO } from "./available-slot-response.dto";

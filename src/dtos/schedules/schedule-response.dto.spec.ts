@@ -8,8 +8,6 @@ describe("ScheduleResponseDTO", () => {
 		patientId: "550e8400-e29b-41d4-a716-446655440002",
 		doctorId: "550e8400-e29b-41d4-a716-446655440003",
 		scheduledAt: new Date("2025-08-17T10:00:00Z"),
-		createdAt: new Date("2025-08-16T12:00:00Z"),
-		updatedAt: new Date("2025-08-16T12:00:00Z"),
 	};
 
 	it("should validate valid schedule response data", () => {
@@ -22,19 +20,6 @@ describe("ScheduleResponseDTO", () => {
 			expect(result.data.patientId).toBe(validData.patientId);
 			expect(result.data.doctorId).toBe(validData.doctorId);
 			expect(result.data.scheduledAt).toEqual(validData.scheduledAt);
-			expect(result.data.createdAt).toEqual(validData.createdAt);
-			expect(result.data.updatedAt).toEqual(validData.updatedAt);
-		}
-	});
-
-	it("should validate without optional dates", () => {
-		const { createdAt, updatedAt, ...minimalData } = validData;
-
-		const result = ScheduleResponseDTO.safeParse(minimalData);
-		expect(result.success).toBe(true);
-		if (result.success) {
-			expect(result.data.createdAt).toBeUndefined();
-			expect(result.data.updatedAt).toBeUndefined();
 		}
 	});
 

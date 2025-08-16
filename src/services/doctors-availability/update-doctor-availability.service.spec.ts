@@ -1,8 +1,9 @@
 import { UpdateDoctorAvailabilityService } from "./update-doctor-availability.service";
-import { DoctorsAvailabilityRepository } from "../../../test/repositories/doctors-availability.repository";
+import { DoctorsAvailabilityRepository } from "t/repositories/doctors-availability.repository";
 import type { CreateDoctorAvailabilityDTO, UpdateDoctorAvailabilityDTO } from "@/dtos/doctors-availability";
-import { MemoryCache } from "../../../test/cache/memory-cache";
+import { MemoryCache } from "t/cache/memory-cache";
 import { NotFoundError } from "@/errors";
+import { testChannel } from "t/channels";
 
 describe("UpdateDoctorAvailabilityService", () => {
 	let service: UpdateDoctorAvailabilityService;
@@ -10,7 +11,7 @@ describe("UpdateDoctorAvailabilityService", () => {
 
 	beforeEach(() => {
 		const cache = new MemoryCache();
-		repository = new DoctorsAvailabilityRepository(cache);
+		repository = new DoctorsAvailabilityRepository(cache, testChannel);
 		service = new UpdateDoctorAvailabilityService(repository);
 	});
 

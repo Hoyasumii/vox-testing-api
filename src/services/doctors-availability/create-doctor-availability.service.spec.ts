@@ -1,7 +1,11 @@
 import { CreateDoctorAvailabilityService } from "./create-doctor-availability.service";
-import { DoctorsAvailabilityRepository } from "../../../test/repositories/doctors-availability.repository";
+import { DoctorsAvailabilityRepository } from "t/repositories/doctors-availability.repository";
 import type { CreateDoctorAvailabilityDTO } from "@/dtos/doctors-availability";
-import { MemoryCache } from "../../../test/cache/memory-cache";
+import { MemoryCache } from "t/cache/memory-cache";
+import { testChannel } from "t/channels";
+import type { uuid } from "@/dtos";
+import { randomUUID } from "node:crypto";
+import type { ChannelBase, RepositoryBase } from "@/types";
 
 describe("CreateDoctorAvailabilityService", () => {
 	let service: CreateDoctorAvailabilityService;
@@ -9,7 +13,7 @@ describe("CreateDoctorAvailabilityService", () => {
 
 	beforeEach(() => {
 		const cache = new MemoryCache();
-		repository = new DoctorsAvailabilityRepository(cache);
+		repository = new DoctorsAvailabilityRepository(cache, testChannel);
 		service = new CreateDoctorAvailabilityService(repository);
 	});
 
@@ -20,11 +24,13 @@ describe("CreateDoctorAvailabilityService", () => {
 	describe("run", () => {
 		it("should create a doctor availability successfully with valid data", async () => {
 			const validData: CreateDoctorAvailabilityDTO = {
-				doctorId: "550e8400-e29b-41d4-a716-446655440000",
+				doctorId: randomUUID(),
 				dayOfWeek: 1,
 				startHour: 9,
 				endHour: 17,
 			};
+
+			await repository.channel.talk<uuid, boolean>("doctor:create", validData.doctorId)
 
 			const result = await service.run(validData);
 
@@ -114,11 +120,13 @@ describe("CreateDoctorAvailabilityService", () => {
 
 		it("should handle repository errors gracefully", async () => {
 			const validData: CreateDoctorAvailabilityDTO = {
-				doctorId: "550e8400-e29b-41d4-a716-446655440000",
+				doctorId: randomUUID(),
 				dayOfWeek: 1,
 				startHour: 9,
 				endHour: 17,
 			};
+
+			await repository.channel.talk<uuid, boolean>("doctor:create", validData.doctorId)
 
 			// Mock repository to throw an error
 			jest.spyOn(repository, "create").mockRejectedValueOnce(new Error("Database error"));
@@ -129,7 +137,9 @@ describe("CreateDoctorAvailabilityService", () => {
 		});
 
 		it("should create multiple availabilities for the same doctor", async () => {
-			const doctorId = "550e8400-e29b-41d4-a716-446655440000";
+			const doctorId = randomUUID();
+
+			await repository.channel.talk<uuid, boolean>("doctor:create", doctorId);
 			
 			const availability1: CreateDoctorAvailabilityDTO = {
 				doctorId,

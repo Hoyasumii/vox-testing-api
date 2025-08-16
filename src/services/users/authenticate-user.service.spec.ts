@@ -2,7 +2,8 @@ import { AuthenticateUserService } from "./authenticate-user.service";
 import { UsersRepository } from "t/repositories/users.repository";
 import { CreateUserDTO, AuthenticateUserDTO } from "@/dtos/users";
 import { PasswordHasher } from "@/utils";
-import { MemoryCache } from "../../../test/cache/memory-cache";
+import { MemoryCache } from "t/cache/memory-cache";
+import { testChannel } from "t/channels";
 
 describe("AuthenticateUserService", () => {
 	let service: AuthenticateUserService;
@@ -11,7 +12,7 @@ describe("AuthenticateUserService", () => {
 
 	beforeEach(() => {
 		const cache = new MemoryCache();
-		repository = new UsersRepository(cache);
+		repository = new UsersRepository(cache, testChannel);
 		service = new AuthenticateUserService(repository);
 		hasher = new PasswordHasher(process.env.ARGON_SECRET || "test-secret");
 	});

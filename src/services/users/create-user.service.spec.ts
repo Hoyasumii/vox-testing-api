@@ -1,7 +1,8 @@
 import { CreateUserService } from "./create-user.service";
 import { UsersRepository } from "t/repositories/users.repository";
 import { CreateUserDTO } from "@/dtos/users";
-import { MemoryCache } from "../../../test/cache/memory-cache";
+import { MemoryCache } from "t/cache/memory-cache";
+import { testChannel } from "t/channels";
 
 describe("CreateUserService", () => {
 	let service: CreateUserService;
@@ -9,7 +10,7 @@ describe("CreateUserService", () => {
 
 	beforeEach(() => {
 		const cache = new MemoryCache();
-		repository = new UsersRepository(cache);
+		repository = new UsersRepository(cache, testChannel);
 		service = new CreateUserService(repository);
 		
 		// Configurar variável de ambiente para o hash

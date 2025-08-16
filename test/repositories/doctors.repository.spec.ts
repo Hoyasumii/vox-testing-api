@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { DoctorsRepository } from "./doctors.repository";
 import { MemoryCache } from "../cache";
+import { testChannel } from "t/channels";
 
 describe("DoctorsRepository", () => {
 	let repository: DoctorsRepository;
@@ -8,7 +9,7 @@ describe("DoctorsRepository", () => {
 
 	beforeEach(() => {
 		cache = new MemoryCache();
-		repository = new DoctorsRepository(cache);
+		repository = new DoctorsRepository(cache, testChannel);
 	});
 
 	afterEach(() => {

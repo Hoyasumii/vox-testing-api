@@ -5,13 +5,14 @@ import {
 } from "@/dtos/users";
 import { email } from '@/dtos';
 import { MemoryCache } from "../cache/memory-cache";
+import { testChannel } from "t/channels";
 
 describe("InMemoryUsersRepository", () => {
 	let repository: UsersRepository;
 
 	beforeEach(() => {
 		const cache = new MemoryCache();
-		repository = new UsersRepository(cache);
+		repository = new UsersRepository(cache, testChannel);
 	});
 
 	describe("create", () => {

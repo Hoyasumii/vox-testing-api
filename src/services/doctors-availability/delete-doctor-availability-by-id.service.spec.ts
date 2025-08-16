@@ -1,8 +1,9 @@
 import { DeleteDoctorAvailabilityByIdService } from "./delete-doctor-availability-by-id.service";
-import { DoctorsAvailabilityRepository } from "../../../test/repositories/doctors-availability.repository";
+import { DoctorsAvailabilityRepository } from "t/repositories/doctors-availability.repository";
 import type { CreateDoctorAvailabilityDTO } from "@/dtos/doctors-availability";
-import { MemoryCache } from "../../../test/cache/memory-cache";
+import { MemoryCache } from "t/cache/memory-cache";
 import { NotFoundError } from "@/errors";
+import { testChannel } from "t/channels";
 
 describe("DeleteDoctorAvailabilityByIdService", () => {
 	let service: DeleteDoctorAvailabilityByIdService;
@@ -10,7 +11,7 @@ describe("DeleteDoctorAvailabilityByIdService", () => {
 
 	beforeEach(() => {
 		const cache = new MemoryCache();
-		repository = new DoctorsAvailabilityRepository(cache);
+		repository = new DoctorsAvailabilityRepository(cache, testChannel);
 		service = new DeleteDoctorAvailabilityByIdService(repository);
 	});
 

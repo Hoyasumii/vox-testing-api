@@ -5,13 +5,14 @@ import {
 } from "@/dtos/doctors-availability";
 import { randomUUID } from "node:crypto";
 import { MemoryCache } from "../cache";
+import { testChannel } from "t/channels";
 
 describe("InMemoryDoctorsAvailabilityRepository", () => {
 	let repository: DoctorsAvailabilityRepository;
 
 	beforeEach(() => {
 		const cache = new MemoryCache()
-		repository = new DoctorsAvailabilityRepository(cache);
+		repository = new DoctorsAvailabilityRepository(cache, testChannel);
 	});
 
 	describe("create", () => {

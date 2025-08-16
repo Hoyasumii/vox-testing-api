@@ -1,8 +1,8 @@
 import { FindByDoctorIdService } from "./find-by-doctor-id.service";
-import { DoctorsAvailabilityRepository } from "../../../test/repositories/doctors-availability.repository";
+import { DoctorsAvailabilityRepository } from "t/repositories/doctors-availability.repository";
 import type { CreateDoctorAvailabilityDTO } from "@/dtos/doctors-availability";
-import { MemoryCache } from "../../../test/cache/memory-cache";
-import type { DoctorsAvailabilityRepositoryBase } from "@/repositories";
+import { MemoryCache } from "t/cache/memory-cache";
+import { testChannel } from "t/channels";
 
 describe("FindByDoctorIdService", () => {
 	let service: FindByDoctorIdService;
@@ -10,7 +10,7 @@ describe("FindByDoctorIdService", () => {
 
 	beforeEach(() => {
 		const cache = new MemoryCache();
-		repository = new DoctorsAvailabilityRepository(cache);
+		repository = new DoctorsAvailabilityRepository(cache, testChannel);
 		service = new FindByDoctorIdService(repository);
 	});
 

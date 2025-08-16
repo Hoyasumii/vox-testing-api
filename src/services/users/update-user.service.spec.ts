@@ -1,7 +1,8 @@
 import { UpdateUserService } from "./update-user.service";
 import { UsersRepository } from "t/repositories/users.repository";
 import { CreateUserDTO, UpdateUserDTO } from "@/dtos/users";
-import { MemoryCache } from "../../../test/cache/memory-cache";
+import { MemoryCache } from "t/cache/memory-cache";
+import { testChannel } from "t/channels";
 
 describe("UpdateUserService", () => {
 	let service: UpdateUserService;
@@ -9,7 +10,7 @@ describe("UpdateUserService", () => {
 
 	beforeEach(() => {
 		const cache = new MemoryCache();
-		repository = new UsersRepository(cache);
+		repository = new UsersRepository(cache, testChannel);
 		service = new UpdateUserService(repository);
 	});
 

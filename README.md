@@ -5,3 +5,4 @@
 - [x] Ajeitar o Cache na camada de Serviços
 - [ ] Implementar o Schedule
 - [x] Criar o sistema de mensageria na camada de Serviços
+- [ ] Criar as Rotas

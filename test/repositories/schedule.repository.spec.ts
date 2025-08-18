@@ -297,7 +297,7 @@ describe("ScheduleRepository", () => {
 			const created = await repository.create(scheduleData);
 			const result = await repository.cancel(created.id);
 
-			expect(result).toBe(true);
+			expect(result).toBeDefined();
 
 			const updated = await repository.findById(created.id);
 			expect(updated?.status).toBe("CANCELED");
@@ -305,7 +305,7 @@ describe("ScheduleRepository", () => {
 
 		it("deve retornar false para agendamento inexistente", async () => {
 			const result = await repository.cancel("non-existent-id");
-			expect(result).toBe(false);
+			expect(result).toBeNull();
 		});
 
 		it("deve retornar false para agendamento já cancelado", async () => {
@@ -320,7 +320,7 @@ describe("ScheduleRepository", () => {
 			await repository.cancel(created.id);
 
 			const result = await repository.cancel(created.id);
-			expect(result).toBe(false);
+			expect(result).toBeNull();
 		});
 	});
 
@@ -336,7 +336,7 @@ describe("ScheduleRepository", () => {
 			const created = await repository.create(scheduleData);
 			const result = await repository.complete(created.id);
 
-			expect(result).toBe(true);
+			expect(result).toBeDefined();
 
 			const updated = await repository.findById(created.id);
 			expect(updated?.status).toBe("COMPLETED");
@@ -344,7 +344,7 @@ describe("ScheduleRepository", () => {
 
 		it("deve retornar false para agendamento inexistente", async () => {
 			const result = await repository.complete("non-existent-id");
-			expect(result).toBe(false);
+			expect(result).toBeNull();
 		});
 
 		it("deve retornar false para agendamento já cancelado", async () => {
@@ -359,7 +359,7 @@ describe("ScheduleRepository", () => {
 			await repository.cancel(created.id);
 
 			const result = await repository.complete(created.id);
-			expect(result).toBe(false);
+			expect(result).toBeNull();
 		});
 	});
 

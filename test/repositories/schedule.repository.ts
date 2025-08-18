@@ -134,10 +134,7 @@ export class ScheduleRepository extends ScheduleRepositoryBase {
 			}));
 	}
 
-	async isDoctorAvailable(
-		doctorId: uuid,
-		targetDate: Date,
-	): Promise<boolean> {
+	async isDoctorAvailable(doctorId: uuid, targetDate: Date): Promise<boolean> {
 		// Verifica se existe disponibilidade para o médico na data específica
 		const hasAvailability = this.availabilities.some(
 			(a) =>
@@ -162,28 +159,26 @@ export class ScheduleRepository extends ScheduleRepositoryBase {
 		return !hasConflictingSchedule;
 	}
 
-	async cancel(scheduleId: uuid): Promise<boolean> {
+	async cancel(scheduleId: uuid): Promise<ScheduleResponseDTO | null> {
 		const schedule = this.schedules.find((s) => s.id === scheduleId);
 
-		if (!schedule || schedule.status !== "SCHEDULED") {
-			return false;
-		}
+		if (!schedule || schedule.status !== "SCHEDULED") return null;
 
 		schedule.status = "CANCELED" as ScheduleStatus;
 		schedule.updatedAt = new Date();
-		return true;
+
+		return schedule;
 	}
 
-	async complete(scheduleId: uuid): Promise<boolean> {
+	async complete(scheduleId: uuid): Promise<ScheduleResponseDTO | null> {
 		const schedule = this.schedules.find((s) => s.id === scheduleId);
 
-		if (!schedule || schedule.status !== "SCHEDULED") {
-			return false;
-		}
+		if (!schedule || schedule.status !== "SCHEDULED") return null;
 
 		schedule.status = "COMPLETED" as ScheduleStatus;
 		schedule.updatedAt = new Date();
-		return true;
+
+		return schedule;
 	}
 
 	// Métodos auxiliares para testes

@@ -17,8 +17,8 @@ export abstract class ScheduleRepositoryBase extends RepositoryBase {
 
 	abstract getAvailableSlots(
 		doctorId: uuid,
-		startDate: Date,
-		endDate: Date,
+		startDate?: Date,
+		endDate?: Date,
 	): Promise<Array<AvailableSlotResponseDTO>>;
 
 	abstract isDoctorAvailable(

@@ -84,6 +84,7 @@ export class ScheduleRepository extends ScheduleRepositoryBase {
 	async findByPatientId(patientId: uuid): Promise<Array<ScheduleResponseDTO>> {
 		return this.schedules
 			.filter((s) => s.patientId === patientId)
+			.sort((a, b) => a.scheduledAt.getTime() - b.scheduledAt.getTime())
 			.map((schedule) => ({
 				id: schedule.id,
 				status: schedule.status,
@@ -97,6 +98,7 @@ export class ScheduleRepository extends ScheduleRepositoryBase {
 	async findByDoctorId(doctorId: uuid): Promise<Array<ScheduleResponseDTO>> {
 		return this.schedules
 			.filter((s) => s.doctorId === doctorId)
+			.sort((a, b) => a.scheduledAt.getTime() - b.scheduledAt.getTime())
 			.map((schedule) => ({
 				id: schedule.id,
 				status: schedule.status,
@@ -120,9 +122,22 @@ export class ScheduleRepository extends ScheduleRepositoryBase {
 
 	async getAvailableSlots(
 		doctorId: uuid,
+		startDate?: Date,
+		endDate?: Date,
 	): Promise<Array<AvailableSlotResponseDTO>> {
 		return this.availabilities
-			.filter((a) => a.doctorId === doctorId && a.isAvailable)
+			.filter((a) => {
+				if (a.doctorId !== doctorId || !a.isAvailable) return false;
+				
+				// Se não foram fornecidas datas, retorna todas as disponibilidades do médico
+				if (!startDate && !endDate) return true;
+				
+				const availableDateTime = a.availableDate.getTime();
+				const startDateTime = startDate ? startDate.getTime() : 0;
+				const endDateTime = endDate ? endDate.getTime() : Number.MAX_SAFE_INTEGER;
+				
+				return availableDateTime >= startDateTime && availableDateTime <= endDateTime;
+			})
 			.map((availability) => ({
 				availabilityId: availability.availabilityId,
 				doctorId: availability.doctorId,

@@ -219,6 +219,7 @@ describe("ScheduleRepository", () => {
 		});
 
 		it("deve retornar apenas slots disponíveis do médico específico", async () => {
+			await repository.create({ doctorId: "doctor-123", patientId: "aaa", availabilityId: "1122", scheduledAt: new Date() });
 			const result = await repository.getAvailableSlots("doctor-123");
 
 			expect(result).toHaveLength(1);

@@ -29,6 +29,6 @@ export abstract class ScheduleRepositoryBase extends RepositoryBase {
 		targetDate: Date,
 	): Promise<boolean>;
 
-	abstract cancel(scheduleId: uuid): Promise<boolean>;
-	abstract complete(scheduleId: uuid): Promise<boolean>;
+	abstract cancel(scheduleId: uuid): Promise<ScheduleResponseDTO | null>;
+	abstract complete(scheduleId: uuid): Promise<ScheduleResponseDTO | null>;
 }

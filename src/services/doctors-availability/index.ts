@@ -2,4 +2,5 @@ export { CreateDoctorAvailabilityService } from "./create-doctor-availability.se
 export { DeleteDoctorAvailabilityByDoctorIdService } from "./delete-doctor-availability-by-doctor-id.service";
 export { DeleteDoctorAvailabilityByIdService } from "./delete-doctor-availability-by-id.service";
 export { FindByDoctorIdService } from "./find-by-doctor-id.service";
+export { IsDoctorAvailabilityExistsService } from "./is-doctor-availability-exists.service";
 export { UpdateDoctorAvailabilityService } from "./update-doctor-availability.service";

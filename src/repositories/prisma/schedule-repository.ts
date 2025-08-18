@@ -108,7 +108,6 @@ export class ScheduleRepository extends ScheduleRepositoryBase {
 
 		const availableSlots: AvailableSlotResponseDTO[] = [];
 
-		// Iterar através das datas no intervalo
 		const currentDate = new Date(startDate);
 		while (currentDate <= endDate) {
 			const dayOfWeek = currentDate.getDay();

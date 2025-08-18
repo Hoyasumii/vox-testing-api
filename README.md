@@ -7,23 +7,22 @@
 - [x] Criar o sistema de mensageria na camada de Serviços
 - [ ] Criar as Rotas
 - [ ] Criar os Testes E2E
+- [ ] Implementar uma feature de Listar as consultas do médico
 
 ## 📋 Mapa de Rotas da API
 
 ### 🔐 **Autenticação** (`/auth`)
-- [ ] `POST /auth/login` - Autenticar usuário (médico/paciente)
-- [ ] `POST /auth/register` - Registrar novo usuário
-- [ ] `POST /auth/refresh` - Renovar token JWT
+- [x] `POST /auth/login` - Autenticar usuário (médico/paciente)
+- [x] `POST /auth/register` - Registrar novo usuário
+- [x] `POST /auth/refresh` - Renovar token JWT
 
 ### 👥 **Usuários** (`/users`)
-- [ ] `GET /users/me` - Obter dados do usuário logado
-- [ ] `PUT /users/me` - Atualizar dados do usuário logado
-- [ ] `DELETE /users/me` - Deletar conta do usuário logado
-- [ ] `GET /users/:id` - Obter usuário por ID (admin only)
+- [x] `GET /users/me` - Obter dados do usuário logado
+- [x] `PUT /users/me` - Atualizar dados do usuário logado
+- [x] `DELETE /users/me` - Deletar conta do usuário logado
 
 ### 👨‍⚕️ **Médicos** (`/doctors`)
-- [ ] `POST /doctors` - Criar perfil de médico (apenas usuários DOCTOR)
-- [ ] `DELETE /doctors/:id` - Deletar perfil de médico
+- [ ] `DELETE /doctors` - Deletar perfil de médico
 - [ ] `GET /doctors/:id/exists` - Verificar se médico existe
 
 ### 📅 **Disponibilidades de Médicos** (`/doctors/:doctorId/availability`)

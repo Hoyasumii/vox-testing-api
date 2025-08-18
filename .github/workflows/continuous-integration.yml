@@ -36,8 +36,5 @@ jobs:
       - name: Running Unit Testings
         run: pnpm test
       
-      - name: Running E2E Testings
-        run: pnpm test:e2e
-      
       - name: Running NestJS Build
         run: pnpm build

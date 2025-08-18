@@ -7,7 +7,7 @@ export const EnvDTO = z.object({
 	POSTGRESQL_DATABASE: z.string(),
 	DATABASE_URL: z.string(),
 	ARGON_SECRET: z.string().describe("Argon2 Secret"),
-	JWT_PRIVATE_KEY: z.jwt().describe("JWT Private Key")
+	JWT_PRIVATE_KEY: z.string().describe("JWT Private Key")
 });
 
 export type EnvDTO = z.infer<typeof EnvDTO>;

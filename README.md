@@ -6,3 +6,5 @@
 - [ ] Implementar o Schedule
 - [x] Criar o sistema de mensageria na camada de Serviços
 - [ ] Criar as Rotas
+
+Esse findByDoctorId e o findByPatientId está uma porcaria pq ele não tem nenhum filtro e pode retornar uma quantidade gigante de dados. Se eu quiser incrementar ele futuramente eu vou ajeitar esses pontos. Talvez até migrar para um DDD.

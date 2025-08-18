@@ -1,0 +1,64 @@
+Isso eu vou usar para ver sobre as regras de negócio de Schedule
+
+async canSchedule(
+		doctorId: uuid,
+		patientId: uuid,
+		scheduledAt: Date,
+		availabilityId: uuid,
+	): Promise<{ canSchedule: boolean; reason?: string }> {
+		const availability = await prisma.doctorAvailability.findFirst({
+			where: {
+				id: availabilityId,
+				doctorId,
+			},
+		});
+
+		if (!availability) {
+			return {
+				canSchedule: false,
+				reason: "Availability not found or does not belong to doctor",
+			};
+		}
+
+		const dayOfWeek = scheduledAt.getDay();
+		const hour = scheduledAt.getHours();
+
+		if (
+			availability.dayOfWeek !== dayOfWeek ||
+			hour < availability.startHour ||
+			hour >= availability.endHour
+		) {
+			return {
+				canSchedule: false,
+				reason: "Time outside doctor's configured availability",
+			};
+		}
+
+		const doctorAvailable = await this.isDoctorAvailable(doctorId, scheduledAt);
+		if (!doctorAvailable) {
+			return {
+				canSchedule: false,
+				reason: "Doctor is not available at this time",
+			};
+		}
+
+		const patientAvailable = await this.isPatientAvailable(
+			patientId,
+			scheduledAt,
+		);
+		if (!patientAvailable) {
+			return {
+				canSchedule: false,
+				reason: "Patient already has an appointment at this time",
+			};
+		}
+
+		if (scheduledAt < new Date()) {
+			return {
+				canSchedule: false,
+				reason: "Cannot schedule appointments in the past",
+			};
+		}
+
+		return { canSchedule: true };
+	}

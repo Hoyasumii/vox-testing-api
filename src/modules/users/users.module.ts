@@ -1,30 +1,13 @@
 import { Module } from "@nestjs/common";
-import {
-	DeleteUserController,
-	GetUserDataController,
-	UpdateUserController,
-} from "@/controllers/users";
-import {
-	DeleteUserService,
-	GetUserContentByIdService,
-	UpdateUserService,
-} from "@/services/users";
+import { DeleteUserModule } from "./delete-user.module";
+import { GetUserDataModule } from "./get-user-data.module";
+import { UpdateUserModule } from "./update-user.module";
 
 @Module({
-	controllers: [
-		DeleteUserController,
-		GetUserDataController,
-		UpdateUserController,
-	],
-	providers: [
-		DeleteUserService,
-		GetUserContentByIdService,
-		UpdateUserService,
-	],
-	exports: [
-		DeleteUserService,
-		GetUserContentByIdService,
-		UpdateUserService,
+	imports: [
+		DeleteUserModule,
+		GetUserDataModule,
+		UpdateUserModule,
 	],
 })
 export class UsersModule {}

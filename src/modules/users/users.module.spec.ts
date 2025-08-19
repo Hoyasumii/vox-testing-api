@@ -1,5 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { UsersModule } from "./users.module";
+import { DeleteUserModule } from "./delete-user.module";
+import { GetUserDataModule } from "./get-user-data.module";
+import { UpdateUserModule } from "./update-user.module";
 import {
 	DeleteUserController,
 	GetUserDataController,
@@ -22,6 +25,23 @@ describe("UsersModule", () => {
 
 	afterEach(async () => {
 		await module.close();
+	});
+
+	describe("Sub-modules", () => {
+		it("should import DeleteUserModule", () => {
+			const deleteUserModule = module.get(DeleteUserModule);
+			expect(deleteUserModule).toBeDefined();
+		});
+
+		it("should import GetUserDataModule", () => {
+			const getUserDataModule = module.get(GetUserDataModule);
+			expect(getUserDataModule).toBeDefined();
+		});
+
+		it("should import UpdateUserModule", () => {
+			const updateUserModule = module.get(UpdateUserModule);
+			expect(updateUserModule).toBeDefined();
+		});
 	});
 
 	describe("Controllers", () => {
@@ -61,18 +81,6 @@ describe("UsersModule", () => {
 			const service = module.get<UpdateUserService>(UpdateUserService);
 			expect(service).toBeDefined();
 			expect(service).toBeInstanceOf(UpdateUserService);
-		});
-	});
-
-	describe("Exports", () => {
-		it("should export all services", () => {
-			const deleteService = module.get<DeleteUserService>(DeleteUserService);
-			const getUserService = module.get<GetUserContentByIdService>(GetUserContentByIdService);
-			const updateService = module.get<UpdateUserService>(UpdateUserService);
-
-			expect(deleteService).toBeDefined();
-			expect(getUserService).toBeDefined();
-			expect(updateService).toBeDefined();
 		});
 	});
 

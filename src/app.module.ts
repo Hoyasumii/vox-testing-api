@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
 import { HelloWorldController } from "@/controllers";
 import { ConfigModule } from "@nestjs/config";
-import { AuthRoute } from "./routes/auth.route";
+import routes from "./routes";
 
 @Module({
-	imports: [ConfigModule.forRoot(), AuthRoute],
+	imports: [ConfigModule.forRoot(), routes],
 	controllers: [HelloWorldController],
 	providers: [],
 })

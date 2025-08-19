@@ -1,12 +1,15 @@
-import { AuthLoginModule, AuthRegisterModule, AuthRefreshTokenModule } from "@/modules/auth";
+import {
+	AuthModule,
+	AuthLoginModule,
+	AuthRegisterModule,
+	AuthRefreshTokenModule,
+} from "@/modules/auth";
 import { Module } from "@nestjs/common";
 import { RouterModule } from "@nestjs/core";
 
 @Module({
 	imports: [
-		AuthLoginModule,
-		AuthRegisterModule,
-		AuthRefreshTokenModule,
+		AuthModule,
 		RouterModule.register([
 			{
 				path: "auth",

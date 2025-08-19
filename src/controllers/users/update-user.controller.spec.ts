@@ -45,7 +45,7 @@ describe("UpdateUserController", () => {
 			
 			mockService.run.mockResolvedValue(expectedResult);
 
-			const result = await controller.update(id, data);
+			const result = await controller.update({ authorization: id }, data);
 
 			expect(service.run).toHaveBeenCalledWith({ id, data });
 			expect(service.run).toHaveBeenCalledTimes(1);
@@ -61,7 +61,7 @@ describe("UpdateUserController", () => {
 			
 			mockService.run.mockRejectedValue(error);
 
-			await expect(controller.update(id, data)).rejects.toThrow(error);
+			await expect(controller.update({ authorization: id }, data)).rejects.toThrow(error);
 			expect(service.run).toHaveBeenCalledWith({ id, data });
 		});
 
@@ -72,7 +72,7 @@ describe("UpdateUserController", () => {
 			
 			mockService.run.mockResolvedValue(expectedResult);
 
-			const result = await controller.update(id, data);
+			const result = await controller.update({ authorization: id }, data);
 
 			expect(service.run).toHaveBeenCalledWith({ id, data });
 			expect(result).toEqual(expectedResult);
@@ -87,7 +87,7 @@ describe("UpdateUserController", () => {
 			
 			mockService.run.mockResolvedValue(expectedResult);
 
-			const result = await controller.update(id, data);
+			const result = await controller.update({ authorization: id }, data);
 
 			expect(service.run).toHaveBeenCalledWith({ id, data });
 			expect(result).toEqual(expectedResult);
@@ -102,7 +102,7 @@ describe("UpdateUserController", () => {
 			
 			mockService.run.mockResolvedValue(expectedResult);
 
-			const result = await controller.update(id, data);
+			const result = await controller.update({ authorization: id }, data);
 
 			expect(service.run).toHaveBeenCalledWith({ id, data });
 			expect(result).toEqual(expectedResult);

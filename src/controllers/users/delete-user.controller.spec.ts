@@ -40,7 +40,7 @@ describe("DeleteUserController", () => {
 			
 			mockService.run.mockResolvedValue(expectedResult);
 
-			const result = await controller.remove(authorization);
+			const result = await controller.remove({ authorization });
 
 			expect(service.run).toHaveBeenCalledWith(authorization);
 			expect(service.run).toHaveBeenCalledTimes(1);
@@ -53,7 +53,7 @@ describe("DeleteUserController", () => {
 			
 			mockService.run.mockRejectedValue(error);
 
-			await expect(controller.remove(authorization)).rejects.toThrow(error);
+			await expect(controller.remove({ authorization })).rejects.toThrow(error);
 			expect(service.run).toHaveBeenCalledWith(authorization);
 		});
 
@@ -63,7 +63,7 @@ describe("DeleteUserController", () => {
 			
 			mockService.run.mockRejectedValue(error);
 
-			await expect(controller.remove(authorization)).rejects.toThrow(error);
+			await expect(controller.remove({ authorization })).rejects.toThrow(error);
 			expect(service.run).toHaveBeenCalledWith(authorization);
 		});
 
@@ -73,7 +73,7 @@ describe("DeleteUserController", () => {
 			
 			mockService.run.mockRejectedValue(error);
 
-			await expect(controller.remove(authorization)).rejects.toThrow(error);
+			await expect(controller.remove({ authorization })).rejects.toThrow(error);
 			expect(service.run).toHaveBeenCalledWith(authorization);
 		});
 
@@ -87,7 +87,7 @@ describe("DeleteUserController", () => {
 			
 			mockService.run.mockResolvedValue(expectedResult);
 
-			const result = await controller.remove(authorization);
+			const result = await controller.remove({ authorization });
 
 			expect(service.run).toHaveBeenCalledWith(authorization);
 			expect(result).toEqual(expectedResult);

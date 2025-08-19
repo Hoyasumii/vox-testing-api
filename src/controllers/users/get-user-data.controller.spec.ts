@@ -40,7 +40,7 @@ describe("GetUserDataController", () => {
 			
 			mockService.run.mockResolvedValue(expectedResult);
 
-			const result = await controller.get(authorization);
+			const result = await controller.get({ authorization });
 
 			expect(service.run).toHaveBeenCalledWith(authorization);
 			expect(service.run).toHaveBeenCalledTimes(1);
@@ -53,7 +53,7 @@ describe("GetUserDataController", () => {
 			
 			mockService.run.mockRejectedValue(error);
 
-			await expect(controller.get(authorization)).rejects.toThrow(error);
+			await expect(controller.get({ authorization })).rejects.toThrow(error);
 			expect(service.run).toHaveBeenCalledWith(authorization);
 		});
 
@@ -63,7 +63,7 @@ describe("GetUserDataController", () => {
 			
 			mockService.run.mockResolvedValue(expectedResult);
 
-			const result = await controller.get(authorization);
+			const result = await controller.get({ authorization });
 
 			expect(service.run).toHaveBeenCalledWith(authorization);
 			expect(result).toEqual(expectedResult);

@@ -34,7 +34,7 @@ describe("RefreshTokenController", () => {
 			jest.spyOn(refreshJwtToken, "run").mockResolvedValue(newToken);
 
 			// Act
-			const result = await controller.refresh(validToken);
+			const result = await controller.refresh({ authorization: validToken });
 
 			// Assert
 			expect(result).toEqual({ token: newToken });
@@ -44,7 +44,7 @@ describe("RefreshTokenController", () => {
 
 		it("deve rejeitar requisição sem header Authorization", async () => {
 			// Act & Assert
-			await expect(controller.refresh()).rejects.toThrow(
+			await expect(controller.refresh({ authorization: "" })).rejects.toThrow(
 				new BadRequestException("Token de autorização é obrigatório")
 			);
 		});
@@ -58,7 +58,7 @@ describe("RefreshTokenController", () => {
 			);
 
 			// Act & Assert
-			await expect(controller.refresh(invalidToken)).rejects.toThrow(
+			await expect(controller.refresh({ authorization: invalidToken })).rejects.toThrow(
 				new UnauthorizedException("Token inválido ou expirado")
 			);
 			expect(verifyJwtToken.run).toHaveBeenCalledWith(invalidToken);
@@ -69,7 +69,7 @@ describe("RefreshTokenController", () => {
 			const emptyAuthorization = "";
 
 			// Act & Assert
-			await expect(controller.refresh(emptyAuthorization)).rejects.toThrow(
+			await expect(controller.refresh({ authorization: emptyAuthorization })).rejects.toThrow(
 				new BadRequestException("Token de autorização é obrigatório")
 			);
 		});
@@ -83,7 +83,7 @@ describe("RefreshTokenController", () => {
 			);
 
 			// Act & Assert
-			await expect(controller.refresh(invalidToken)).rejects.toThrow(
+			await expect(controller.refresh({ authorization: invalidToken })).rejects.toThrow(
 				new UnauthorizedException("Token inválido ou expirado")
 			);
 			expect(verifyJwtToken.run).toHaveBeenCalledWith(invalidToken);
@@ -102,7 +102,7 @@ describe("RefreshTokenController", () => {
 			);
 
 			// Act & Assert
-			await expect(controller.refresh(expiredToken)).rejects.toThrow(
+			await expect(controller.refresh({ authorization: expiredToken })).rejects.toThrow(
 				new UnauthorizedException("Token inválido ou expirado")
 			);
 			expect(verifyJwtToken.run).toHaveBeenCalledWith(expiredToken);
@@ -122,7 +122,7 @@ describe("RefreshTokenController", () => {
 			);
 
 			// Act & Assert
-			await expect(controller.refresh(validToken)).rejects.toThrow(
+			await expect(controller.refresh({ authorization: validToken })).rejects.toThrow(
 				new UnauthorizedException("Token inválido ou expirado")
 			);
 			expect(verifyJwtToken.run).toHaveBeenCalledWith(validToken);

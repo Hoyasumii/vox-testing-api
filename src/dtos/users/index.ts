@@ -5,3 +5,5 @@ export { UserResponseDTO } from "./user-response.dto";
 export { UserAuthResponseDTO } from "./user-auth-response.dto";
 export { UserPasswordDTO } from "./user-password.dto";
 export { AuthenticateUserDTO } from "./authenticate-user.dto";
+export { RefreshTokenDTO } from "./refresh-token.dto";
+export { AuthorizationHeaderDTO } from "./authorization-header.dto";

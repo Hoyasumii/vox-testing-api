@@ -5,34 +5,36 @@
 - [x] Ajeitar o Cache na camada de Serviços
 - [x] Implementar o Schedule
 - [x] Criar o sistema de mensageria na camada de Serviços
+- [x] Implementar padrão createZodDto em todos os controllers
+- [x] Adicionar tags OpenAPI para agrupamento de rotas
 - [ ] Criar as Rotas
 - [ ] Criar os Testes E2E
 - [ ] Implementar uma feature de Listar as consultas do médico
 
 ## 📋 Mapa de Rotas da API
 
-### 🔐 **Autenticação** (`/auth`)
+### 🔐 **Autenticação** (`/auth`) - Tag: "🔐 Autenticação"
 - [x] `POST /auth/login` - Autenticar usuário (médico/paciente)
 - [x] `POST /auth/register` - Registrar novo usuário
 - [x] `POST /auth/refresh` - Renovar token JWT
 
-### 👥 **Usuários** (`/users`)
+### 👥 **Usuários** (`/users`) - Tag: "👥 Usuários"
 - [x] `GET /users/me` - Obter dados do usuário logado
 - [x] `PUT /users/me` - Atualizar dados do usuário logado
 - [x] `DELETE /users/me` - Deletar conta do usuário logado
 
-### 👨‍⚕️ **Médicos** (`/doctors`)
-- [ ] `DELETE /doctors` - Deletar perfil de médico
-- [ ] `GET /doctors/:id/exists` - Verificar se médico existe
+### 👨‍⚕️ **Médicos** (`/doctors`) - Tag: "👨‍⚕️ Médicos"
+- [x] `DELETE /doctors` - Deletar perfil de médico
+- [x] `GET /doctors/:id/exists` - Verificar se médico existe
 
-### 📅 **Disponibilidades de Médicos** (`/doctors/:doctorId/availability`)
+### 📅 **Disponibilidades de Médicos** (`/doctors/:doctorId/availability`) - Tag: "📅 Disponibilidades"
 - [ ] `POST /doctors/:doctorId/availability` - Criar disponibilidade
 - [ ] `GET /doctors/:doctorId/availability` - Listar disponibilidades do médico
 - [ ] `PUT /doctors/:doctorId/availability/:id` - Atualizar disponibilidade
 - [ ] `DELETE /doctors/:doctorId/availability/:id` - Deletar disponibilidade específica
 - [ ] `DELETE /doctors/:doctorId/availability` - Deletar todas disponibilidades do médico
 
-### 🗓️ **Agendamentos** (`/schedules`)
+### 🗓️ **Agendamentos** (`/schedules`) - Tag: "🗓️ Agendamentos"
 - [ ] `POST /schedules` - Criar agendamento (pacientes)
 - [ ] `GET /schedules/me` - Listar agendamentos do usuário logado
 - [ ] `GET /schedules/:id` - Obter agendamento por ID
@@ -40,13 +42,16 @@
 - [ ] `PUT /schedules/:id/complete` - Marcar agendamento como concluído (médicos)
 - [ ] `DELETE /schedules/:id` - Deletar agendamento
 
-### 🔍 **Busca de Horários** (`/availability`)
+### 🔍 **Busca de Horários** (`/availability`) - Tag: "🔍 Busca de Horários"
 - [ ] `GET /availability/slots` - Buscar slots disponíveis
   - Query params: `doctorId`, `date`, `startDate`, `endDate`
 
-### 📊 **Relatórios** (Opcional)
+### 📊 **Relatórios** (Opcional) - Tag: "📊 Relatórios"
 - [ ] `GET /doctors/:doctorId/schedules` - Agendamentos do médico
 - [ ] `GET /patients/:patientId/schedules` - Agendamentos do paciente
+
+### 🔧 **Utilitários** - Tag: "🔧 Utilitários"
+- [x] `GET /hello-world` - Verificação de saúde da API
 
 ## 🛡️ **Middleware de Segurança**
 - [ ] Autenticação JWT em todas as rotas (exceto auth)

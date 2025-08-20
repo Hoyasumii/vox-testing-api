@@ -1,9 +1,12 @@
 import { DeleteUserService } from "@/services/users";
-import { Controller, Delete, Headers } from "@nestjs/common";
-import { AuthorizationHeader } from "../common-dtos";
-import { ApiTags, ApiOperation, ApiResponse, ApiHeader } from "@nestjs/swagger";
+import { Controller, Delete, UseGuards, Request } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from "@nestjs/swagger";
+import { JwtAuthGuard } from "@/guards";
+import type { AuthenticatedRequest } from "@/types";
 
 @ApiTags("👥 Usuários")
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller()
 export class DeleteUserController {
 	constructor(private service: DeleteUserService) {}
@@ -13,11 +16,6 @@ export class DeleteUserController {
 		summary: "Deletar conta do usuário logado",
 		description: "Remove permanentemente a conta do usuário autenticado"
 	})
-	@ApiHeader({
-		name: "authorization",
-		description: "Token JWT do usuário",
-		required: true
-	})
 	@ApiResponse({ 
 		status: 200, 
 		description: "Conta deletada com sucesso" 
@@ -26,7 +24,7 @@ export class DeleteUserController {
 		status: 401, 
 		description: "Token inválido ou expirado" 
 	})
-	async remove(@Headers() headers: AuthorizationHeader) {
-		return this.service.run(headers.authorization);
+	async remove(@Request() req: AuthenticatedRequest) {
+		return this.service.run(req.user.id);
 	}
 }

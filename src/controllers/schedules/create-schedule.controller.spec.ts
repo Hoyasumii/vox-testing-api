@@ -2,10 +2,16 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CreateScheduleController, CreateScheduleBody } from "./create-schedule.controller";
 import { CreateScheduleService } from "@/services/schedule";
 import { ScheduleStatus } from "@/dtos/schedules/schedule-types";
+import { AuthenticatedRequest } from "@/types/authenticated-request.interface";
+import { JwtAuthGuard } from "@/guards";
 
 describe("CreateScheduleController", () => {
 	let controller: CreateScheduleController;
 	let createScheduleService: CreateScheduleService;
+
+	const mockJwtAuthGuard = {
+		canActivate: jest.fn(() => true),
+	};
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -17,8 +23,12 @@ describe("CreateScheduleController", () => {
 						run: jest.fn(),
 					},
 				},
+				{
+					provide: JwtAuthGuard,
+					useValue: mockJwtAuthGuard,
+				},
 			],
-		}).compile();
+		}).overrideGuard(JwtAuthGuard).useValue(mockJwtAuthGuard).compile();
 
 		controller = module.get<CreateScheduleController>(CreateScheduleController);
 		createScheduleService = module.get<CreateScheduleService>(CreateScheduleService);
@@ -29,15 +39,23 @@ describe("CreateScheduleController", () => {
 			// Arrange
 			const body: CreateScheduleBody = {
 				availabilityId: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-				patientId: "a47ac10b-58cc-4372-a567-0e02b2c3d480",
 				doctorId: "b47ac10b-58cc-4372-a567-0e02b2c3d481",
 				scheduledAt: "2025-08-20T10:00:00Z",
 			};
 
+			const req = {
+				user: {
+					id: "a47ac10b-58cc-4372-a567-0e02b2c3d480",
+					name: "Test Patient",
+					email: "patient@test.com",
+					type: "PATIENT" as const
+				}
+			} as AuthenticatedRequest;
+
 			const expectedResult = {
 				id: "schedule-uuid",
 				availabilityId: body.availabilityId,
-				patientId: body.patientId,
+				patientId: req.user.id,
 				doctorId: body.doctorId,
 				scheduledAt: new Date(body.scheduledAt),
 				status: "SCHEDULED" as ScheduleStatus,
@@ -46,12 +64,13 @@ describe("CreateScheduleController", () => {
 			jest.spyOn(createScheduleService, "run").mockResolvedValue(expectedResult);
 
 			// Act
-			const result = await controller.create(body);
+			const result = await controller.create(req, body);
 
 			// Assert
 			expect(result).toBe(expectedResult);
 			expect(createScheduleService.run).toHaveBeenCalledWith({
 				...body,
+				patientId: req.user.id,
 				scheduledAt: new Date(body.scheduledAt),
 			});
 			expect(createScheduleService.run).toHaveBeenCalledTimes(1);
@@ -61,21 +80,30 @@ describe("CreateScheduleController", () => {
 			// Arrange
 			const body: CreateScheduleBody = {
 				availabilityId: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-				patientId: "a47ac10b-58cc-4372-a567-0e02b2c3d480",
 				doctorId: "b47ac10b-58cc-4372-a567-0e02b2c3d481",
 				scheduledAt: "2025-08-20T10:00:00Z",
 			};
+
+			const req = {
+				user: {
+					id: "a47ac10b-58cc-4372-a567-0e02b2c3d480",
+					name: "Test Patient",
+					email: "patient@test.com",
+					type: "PATIENT" as const
+				}
+			} as AuthenticatedRequest;
 
 			const expectedError = new Error("Horário não disponível");
 
 			jest.spyOn(createScheduleService, "run").mockRejectedValue(expectedError);
 
 			// Act & Assert
-			await expect(controller.create(body))
+			await expect(controller.create(req, body))
 				.rejects.toThrow(expectedError);
 
 			expect(createScheduleService.run).toHaveBeenCalledWith({
 				...body,
+				patientId: req.user.id,
 				scheduledAt: new Date(body.scheduledAt),
 			});
 			expect(createScheduleService.run).toHaveBeenCalledTimes(1);
@@ -85,15 +113,23 @@ describe("CreateScheduleController", () => {
 			// Arrange
 			const body: CreateScheduleBody = {
 				availabilityId: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-				patientId: "a47ac10b-58cc-4372-a567-0e02b2c3d480",
 				doctorId: "b47ac10b-58cc-4372-a567-0e02b2c3d481",
 				scheduledAt: "2025-08-20T14:30:00Z",
 			};
 
+			const req = {
+				user: {
+					id: "a47ac10b-58cc-4372-a567-0e02b2c3d480",
+					name: "Test Patient",
+					email: "patient@test.com",
+					type: "PATIENT" as const
+				}
+			} as AuthenticatedRequest;
+
 			const expectedResult = {
 				id: "schedule-uuid",
 				availabilityId: body.availabilityId,
-				patientId: body.patientId,
+				patientId: req.user.id,
 				doctorId: body.doctorId,
 				scheduledAt: new Date(body.scheduledAt),
 				status: "SCHEDULED" as ScheduleStatus,
@@ -101,11 +137,12 @@ describe("CreateScheduleController", () => {
 			jest.spyOn(createScheduleService, "run").mockResolvedValue(expectedResult);
 
 			// Act
-			await controller.create(body);
+			await controller.create(req, body);
 
 			// Assert
 			const expectedServiceCall = {
 				...body,
+				patientId: req.user.id,
 				scheduledAt: new Date("2025-08-20T14:30:00Z"),
 			};
 

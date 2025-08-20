@@ -1,7 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { UpdateUserController } from "./update-user.controller";
 import { UpdateUserService } from "@/services/users";
-import type { UpdateUserDTO } from "@/dtos/users";
+import { UpdateUserDTO } from "@/dtos/users";
+import { AuthenticatedRequest } from "@/types/authenticated-request.interface";
+import { JwtAuthGuard } from "@/guards";
 
 describe("UpdateUserController", () => {
 	let controller: UpdateUserController;
@@ -9,6 +11,10 @@ describe("UpdateUserController", () => {
 
 	const mockService = {
 		run: jest.fn(),
+	};
+
+	const mockJwtAuthGuard = {
+		canActivate: jest.fn(() => true),
 	};
 
 	beforeEach(async () => {
@@ -19,8 +25,12 @@ describe("UpdateUserController", () => {
 					provide: UpdateUserService,
 					useValue: mockService,
 				},
+				{
+					provide: JwtAuthGuard,
+					useValue: mockJwtAuthGuard,
+				},
 			],
-		}).compile();
+		}).overrideGuard(JwtAuthGuard).useValue(mockJwtAuthGuard).compile();
 
 		controller = module.get<UpdateUserController>(UpdateUserController);
 		service = module.get<UpdateUserService>(UpdateUserService);
@@ -35,8 +45,16 @@ describe("UpdateUserController", () => {
 	});
 
 	describe("update", () => {
-		it("should call service.run with id and data", async () => {
-			const id = "Bearer token123";
+		it("should call service.run with user id and data", async () => {
+			const userId = "user123";
+			const request: AuthenticatedRequest = {
+				user: {
+					id: userId,
+					email: "test@example.com",
+					name: "Test User",
+					type: "PATIENT",
+				},
+			} as AuthenticatedRequest;
 			const data: UpdateUserDTO = {
 				name: "John Doe Updated",
 				email: "john.updated@example.com",
@@ -45,15 +63,23 @@ describe("UpdateUserController", () => {
 			
 			mockService.run.mockResolvedValue(expectedResult);
 
-			const result = await controller.update({ authorization: id }, data);
+			const result = await controller.update(request, data);
 
-			expect(service.run).toHaveBeenCalledWith({ id, data });
+			expect(service.run).toHaveBeenCalledWith({ id: userId, data });
 			expect(service.run).toHaveBeenCalledTimes(1);
 			expect(result).toEqual(expectedResult);
 		});
 
 		it("should handle service errors", async () => {
-			const id = "Bearer token123";
+			const userId = "user123";
+			const request: AuthenticatedRequest = {
+				user: {
+					id: userId,
+					email: "test@example.com",
+					name: "Test User",
+					type: "PATIENT",
+				},
+			} as AuthenticatedRequest;
 			const data: UpdateUserDTO = {
 				name: "John Doe Updated",
 			};
@@ -61,25 +87,41 @@ describe("UpdateUserController", () => {
 			
 			mockService.run.mockRejectedValue(error);
 
-			await expect(controller.update({ authorization: id }, data)).rejects.toThrow(error);
-			expect(service.run).toHaveBeenCalledWith({ id, data });
+			await expect(controller.update(request, data)).rejects.toThrow(error);
+			expect(service.run).toHaveBeenCalledWith({ id: userId, data });
 		});
 
 		it("should handle empty data object", async () => {
-			const id = "Bearer token123";
+			const userId = "user123";
+			const request: AuthenticatedRequest = {
+				user: {
+					id: userId,
+					email: "test@example.com",
+					name: "Test User",
+					type: "PATIENT",
+				},
+			} as AuthenticatedRequest;
 			const data: UpdateUserDTO = {};
 			const expectedResult = { success: true, message: "No changes made" };
 			
 			mockService.run.mockResolvedValue(expectedResult);
 
-			const result = await controller.update({ authorization: id }, data);
+			const result = await controller.update(request, data);
 
-			expect(service.run).toHaveBeenCalledWith({ id, data });
+			expect(service.run).toHaveBeenCalledWith({ id: userId, data });
 			expect(result).toEqual(expectedResult);
 		});
 
 		it("should handle partial data updates", async () => {
-			const id = "Bearer token123";
+			const userId = "user123";
+			const request: AuthenticatedRequest = {
+				user: {
+					id: userId,
+					email: "test@example.com",
+					name: "Test User",
+					type: "PATIENT",
+				},
+			} as AuthenticatedRequest;
 			const data: UpdateUserDTO = {
 				email: "newemail@example.com",
 			};
@@ -87,14 +129,22 @@ describe("UpdateUserController", () => {
 			
 			mockService.run.mockResolvedValue(expectedResult);
 
-			const result = await controller.update({ authorization: id }, data);
+			const result = await controller.update(request, data);
 
-			expect(service.run).toHaveBeenCalledWith({ id, data });
+			expect(service.run).toHaveBeenCalledWith({ id: userId, data });
 			expect(result).toEqual(expectedResult);
 		});
 
 		it("should handle password updates", async () => {
-			const id = "Bearer token123";
+			const userId = "user123";
+			const request: AuthenticatedRequest = {
+				user: {
+					id: userId,
+					email: "test@example.com",
+					name: "Test User",
+					type: "PATIENT",
+				},
+			} as AuthenticatedRequest;
 			const data: UpdateUserDTO = {
 				password: "NewPassword123!",
 			};
@@ -102,9 +152,9 @@ describe("UpdateUserController", () => {
 			
 			mockService.run.mockResolvedValue(expectedResult);
 
-			const result = await controller.update({ authorization: id }, data);
+			const result = await controller.update(request, data);
 
-			expect(service.run).toHaveBeenCalledWith({ id, data });
+			expect(service.run).toHaveBeenCalledWith({ id: userId, data });
 			expect(result).toEqual(expectedResult);
 		});
 	});

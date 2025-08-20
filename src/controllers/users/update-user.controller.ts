@@ -1,13 +1,16 @@
 import { UpdateUserDTO } from "@/dtos/users";
 import { UpdateUserService } from "@/services/users";
-import { Body, Controller, Headers, Put } from "@nestjs/common";
+import { Body, Controller, Put, UseGuards, Request } from "@nestjs/common";
 import { createZodDto } from "nestjs-zod";
-import { AuthorizationHeader } from "../common-dtos";
-import { ApiTags, ApiOperation, ApiResponse, ApiHeader } from "@nestjs/swagger";
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from "@nestjs/swagger";
+import { JwtAuthGuard } from "@/guards";
+import type { AuthenticatedRequest } from "@/types";
 
 export class UpdateUser extends createZodDto(UpdateUserDTO) {}
 
 @ApiTags("👥 Usuários")
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller()
 export class UpdateUserController {
 	constructor(private service: UpdateUserService) {}
@@ -16,11 +19,6 @@ export class UpdateUserController {
 	@ApiOperation({ 
 		summary: "Atualizar dados do usuário logado",
 		description: "Atualiza as informações do usuário autenticado"
-	})
-	@ApiHeader({
-		name: "authorization",
-		description: "Token JWT do usuário",
-		required: true
 	})
 	@ApiResponse({ 
 		status: 200, 
@@ -31,9 +29,9 @@ export class UpdateUserController {
 		description: "Token inválido ou expirado" 
 	})
 	async update(
-		@Headers() headers: AuthorizationHeader,
+		@Request() req: AuthenticatedRequest,
 		@Body() data: UpdateUser,
 	) {
-		return await this.service.run({ id: headers.authorization, data });
+		return await this.service.run({ id: req.user.id, data });
 	}
 }

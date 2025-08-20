@@ -1,9 +1,12 @@
 import { GetUserContentByIdService } from "@/services/users";
-import { Controller, Get, Headers } from "@nestjs/common";
-import { AuthorizationHeader } from "../common-dtos";
-import { ApiTags, ApiOperation, ApiResponse, ApiHeader } from "@nestjs/swagger";
+import { Controller, Get, UseGuards, Request } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from "@nestjs/swagger";
+import { JwtAuthGuard } from "@/guards";
+import type { AuthenticatedRequest } from "@/types";
 
 @ApiTags("👥 Usuários")
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller()
 export class GetUserDataController {
 	constructor(private service: GetUserContentByIdService) {}
@@ -13,11 +16,6 @@ export class GetUserDataController {
 		summary: "Obter dados do usuário logado",
 		description: "Retorna os dados do usuário autenticado"
 	})
-	@ApiHeader({
-		name: "authorization",
-		description: "Token JWT do usuário",
-		required: true
-	})
 	@ApiResponse({ 
 		status: 200, 
 		description: "Dados do usuário retornados com sucesso" 
@@ -26,7 +24,7 @@ export class GetUserDataController {
 		status: 401, 
 		description: "Token inválido ou expirado" 
 	})
-	async get(@Headers() headers: AuthorizationHeader) {
-		return await this.service.run(headers.authorization);
+	async get(@Request() req: AuthenticatedRequest) {
+		return await this.service.run(req.user.id);
 	}
 }

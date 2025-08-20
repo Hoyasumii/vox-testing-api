@@ -1,6 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { DeleteUserController } from "./delete-user.controller";
 import { DeleteUserService } from "@/services/users";
+import { AuthenticatedRequest } from "@/types/authenticated-request.interface";
+import { JwtAuthGuard } from "@/guards";
 
 describe("DeleteUserController", () => {
 	let controller: DeleteUserController;
@@ -8,6 +10,10 @@ describe("DeleteUserController", () => {
 
 	const mockService = {
 		run: jest.fn(),
+	};
+
+	const mockJwtAuthGuard = {
+		canActivate: jest.fn(() => true),
 	};
 
 	beforeEach(async () => {
@@ -18,8 +24,12 @@ describe("DeleteUserController", () => {
 					provide: DeleteUserService,
 					useValue: mockService,
 				},
+				{
+					provide: JwtAuthGuard,
+					useValue: mockJwtAuthGuard,
+				},
 			],
-		}).compile();
+		}).overrideGuard(JwtAuthGuard).useValue(mockJwtAuthGuard).compile();
 
 		controller = module.get<DeleteUserController>(DeleteUserController);
 		service = module.get<DeleteUserService>(DeleteUserService);
@@ -34,51 +44,91 @@ describe("DeleteUserController", () => {
 	});
 
 	describe("remove", () => {
-		it("should call service.run with authorization header", async () => {
-			const authorization = "Bearer token123";
+		it("should call service.run with user id from authenticated request", async () => {
+			const userId = "user123";
+			const request: AuthenticatedRequest = {
+				user: {
+					id: userId,
+					email: "test@example.com",
+					name: "Test User",
+					type: "PATIENT",
+				},
+			} as AuthenticatedRequest;
 			const expectedResult = { success: true, message: "User deleted successfully" };
 			
 			mockService.run.mockResolvedValue(expectedResult);
 
-			const result = await controller.remove({ authorization });
+			const result = await controller.remove(request);
 
-			expect(service.run).toHaveBeenCalledWith(authorization);
+			expect(service.run).toHaveBeenCalledWith(userId);
 			expect(service.run).toHaveBeenCalledTimes(1);
 			expect(result).toEqual(expectedResult);
 		});
 
 		it("should handle service errors", async () => {
-			const authorization = "Bearer token123";
+			const userId = "user123";
+			const request: AuthenticatedRequest = {
+				user: {
+					id: userId,
+					email: "test@example.com",
+					name: "Test User",
+					type: "PATIENT",
+				},
+			} as AuthenticatedRequest;
 			const error = new Error("User not found");
 			
 			mockService.run.mockRejectedValue(error);
 
-			await expect(controller.remove({ authorization })).rejects.toThrow(error);
-			expect(service.run).toHaveBeenCalledWith(authorization);
+			await expect(controller.remove(request)).rejects.toThrow(error);
+			expect(service.run).toHaveBeenCalledWith(userId);
 		});
 
 		it("should handle unauthorized requests", async () => {
-			const authorization = "";
+			const userId = "user123";
+			const request: AuthenticatedRequest = {
+				user: {
+					id: userId,
+					email: "test@example.com",
+					name: "Test User",
+					type: "PATIENT",
+				},
+			} as AuthenticatedRequest;
 			const error = new Error("Unauthorized");
 			
 			mockService.run.mockRejectedValue(error);
 
-			await expect(controller.remove({ authorization })).rejects.toThrow(error);
-			expect(service.run).toHaveBeenCalledWith(authorization);
+			await expect(controller.remove(request)).rejects.toThrow(error);
+			expect(service.run).toHaveBeenCalledWith(userId);
 		});
 
-		it("should handle invalid token format", async () => {
-			const authorization = "InvalidToken";
-			const error = new Error("Invalid token format");
+		it("should handle invalid user id", async () => {
+			const userId = "";
+			const request: AuthenticatedRequest = {
+				user: {
+					id: userId,
+					email: "test@example.com",
+					name: "Test User",
+					type: "PATIENT",
+				},
+			} as AuthenticatedRequest;
+			const error = new Error("Invalid user id");
 			
 			mockService.run.mockRejectedValue(error);
 
-			await expect(controller.remove({ authorization })).rejects.toThrow(error);
-			expect(service.run).toHaveBeenCalledWith(authorization);
+			await expect(controller.remove(request)).rejects.toThrow(error);
+			expect(service.run).toHaveBeenCalledWith(userId);
 		});
 
 		it("should return success result when user is deleted", async () => {
-			const authorization = "Bearer validtoken123";
+			const userId = "user123";
+			const request: AuthenticatedRequest = {
+				user: {
+					id: userId,
+					email: "test@example.com",
+					name: "Test User",
+					type: "PATIENT",
+				},
+			} as AuthenticatedRequest;
 			const expectedResult = { 
 				success: true, 
 				message: "User deleted successfully",
@@ -87,9 +137,9 @@ describe("DeleteUserController", () => {
 			
 			mockService.run.mockResolvedValue(expectedResult);
 
-			const result = await controller.remove({ authorization });
+			const result = await controller.remove(request);
 
-			expect(service.run).toHaveBeenCalledWith(authorization);
+			expect(service.run).toHaveBeenCalledWith(userId);
 			expect(result).toEqual(expectedResult);
 		});
 	});

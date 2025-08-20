@@ -2,8 +2,10 @@ import { CreateDoctorAvailabilityController } from "@/controllers/doctor-availab
 import { makeCreateDoctorAvailabilityFactory } from "@/factories/doctors-availability";
 import { CreateDoctorAvailabilityService } from "@/services/doctors-availability";
 import { Module } from "@nestjs/common";
+import { GuardsModule } from "../guards/guards.module";
 
 @Module({
+	imports: [GuardsModule],
 	controllers: [CreateDoctorAvailabilityController],
 	providers: [
 		{

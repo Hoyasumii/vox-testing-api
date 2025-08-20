@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { UsersRoute } from "./users.route";
-import { UsersModule } from "@/modules/users";
+import { UpdateUserModule, DeleteUserModule, GetUserDataModule } from "@/modules/users";
 import { RouterModule } from "@nestjs/core";
 
 describe("UsersRoute", () => {
@@ -8,7 +8,31 @@ describe("UsersRoute", () => {
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			imports: [UsersRoute],
+			imports: [
+				UpdateUserModule,
+				DeleteUserModule,
+				GetUserDataModule,
+				RouterModule.register([
+					{
+						path: "/users",
+						children: [
+							{
+								path: "/me",
+								module: GetUserDataModule,
+							},
+							{
+								path: "/me",
+								module: UpdateUserModule
+							},
+							{
+								path: "/me",
+								module: DeleteUserModule
+							}
+						],
+					},
+				]),
+				UsersRoute
+			],
 		}).compile();
 	});
 
@@ -20,9 +44,14 @@ describe("UsersRoute", () => {
 		expect(module).toBeDefined();
 	});
 
-	it("deve importar o UsersModule necessário", () => {
-		const usersModule = module.get(UsersModule);
-		expect(usersModule).toBeDefined();
+	it("deve importar os módulos necessários", () => {
+		const updateUserModule = module.get(UpdateUserModule);
+		const deleteUserModule = module.get(DeleteUserModule);
+		const getUserDataModule = module.get(GetUserDataModule);
+		
+		expect(updateUserModule).toBeDefined();
+		expect(deleteUserModule).toBeDefined();
+		expect(getUserDataModule).toBeDefined();
 	});
 
 	it("deve ter configuração de rotas correta", () => {
@@ -44,9 +73,14 @@ describe("UsersRoute", () => {
 	});
 
 	describe("Integração com módulos", () => {
-		it("deve integrar corretamente com UsersModule", () => {
-			const usersModule = module.get(UsersModule);
-			expect(usersModule).toBeDefined();
+		it("deve integrar corretamente com os módulos de usuário", () => {
+			const updateUserModule = module.get(UpdateUserModule);
+			const deleteUserModule = module.get(DeleteUserModule);
+			const getUserDataModule = module.get(GetUserDataModule);
+			
+			expect(updateUserModule).toBeDefined();
+			expect(deleteUserModule).toBeDefined();
+			expect(getUserDataModule).toBeDefined();
 		});
 
 		it("deve ter RouterModule configurado", () => {

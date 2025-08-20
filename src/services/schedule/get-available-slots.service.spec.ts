@@ -97,21 +97,22 @@ describe("GetAvailableSlotsSerice", () => {
 			const doctorId = randomUUID();
 			const availabilityId = randomUUID();
 			const now = new Date();
+			const futureDate = new Date(now.getTime() + 5000); // 5 segundos no futuro
 
 			repository.addAvailability({
 				availabilityId,
 				doctorId,
-				dayOfWeek: now.getDay(),
+				dayOfWeek: futureDate.getDay(),
 				startHour: 10,
 				endHour: 11,
-				availableDate: now,
+				availableDate: futureDate,
 				isAvailable: true,
 			});
 
 			// Act
 			const result = await service.run({
 				doctorId,
-				endDate: new Date(now.getTime() + 1000), // 1 segundo depois para criar um range
+				endDate: new Date(futureDate.getTime() + 1000), // 1 segundo depois da availability
 			});
 
 			// Assert

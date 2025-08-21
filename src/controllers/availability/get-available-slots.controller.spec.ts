@@ -121,7 +121,7 @@ describe("GetAvailableSlotsController", () => {
 				date: "2025-01-20"
 			};
 
-			await expect(controller.get(query)).rejects.toThrow("doctorId is required for now");
+			await expect(controller.get(query)).rejects.toThrow("doctorId is required");
 		});
 
 		it("deve propagar erros do service", async () => {

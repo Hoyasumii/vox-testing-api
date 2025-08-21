@@ -1,13 +1,25 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { GetSchedulesByUserController } from "./get-schedules-by-user.controller";
-import { GetScheduleByPatientIdService } from "@/services/schedule";
-import { AuthorizationHeader } from "../common-dtos";
+import { GetScheduleByPatientIdService, GetScheduleByDoctorIdService } from "@/services/schedule";
+import type { AuthenticatedRequest } from "@/types";
+
+// Mock do JwtAuthGuard para evitar dependências
+jest.mock("@/guards", () => ({
+	JwtAuthGuard: jest.fn().mockImplementation(() => ({
+		canActivate: jest.fn().mockReturnValue(true)
+	}))
+}));
 
 describe("GetSchedulesByUserController", () => {
 	let controller: GetSchedulesByUserController;
-	let service: GetScheduleByPatientIdService;
+	let patientService: GetScheduleByPatientIdService;
+	let doctorService: GetScheduleByDoctorIdService;
 
-	const mockService = {
+	const mockPatientService = {
+		run: jest.fn()
+	};
+
+	const mockDoctorService = {
 		run: jest.fn()
 	};
 
@@ -17,13 +29,21 @@ describe("GetSchedulesByUserController", () => {
 			providers: [
 				{
 					provide: GetScheduleByPatientIdService,
-					useValue: mockService
+					useValue: mockPatientService
+				},
+				{
+					provide: GetScheduleByDoctorIdService,
+					useValue: mockDoctorService
 				}
 			]
-		}).compile();
+		})
+		.overrideGuard(require("@/guards").JwtAuthGuard)
+		.useValue({ canActivate: jest.fn().mockReturnValue(true) })
+		.compile();
 
 		controller = module.get<GetSchedulesByUserController>(GetSchedulesByUserController);
-		service = module.get<GetScheduleByPatientIdService>(GetScheduleByPatientIdService);
+		patientService = module.get<GetScheduleByPatientIdService>(GetScheduleByPatientIdService);
+		doctorService = module.get<GetScheduleByDoctorIdService>(GetScheduleByDoctorIdService);
 	});
 
 	afterEach(() => {
@@ -34,56 +54,100 @@ describe("GetSchedulesByUserController", () => {
 		expect(controller).toBeDefined();
 	});
 
-	it("deve injetar o GetScheduleByPatientIdService", () => {
-		expect(service).toBeDefined();
+	it("deve injetar ambos os serviços", () => {
+		expect(patientService).toBeDefined();
+		expect(doctorService).toBeDefined();
 	});
 
 	describe("get", () => {
-		it("deve chamar o service com o token de autorização", async () => {
-			const headers: AuthorizationHeader = {
-				authorization: "Bearer valid-token"
-			};
+		it("deve chamar o serviço de paciente para usuário PATIENT", async () => {
+			const req: AuthenticatedRequest = {
+				user: {
+					id: "patient-123",
+					name: "João Silva",
+					email: "joao@email.com",
+					type: "PATIENT"
+				}
+			} as AuthenticatedRequest;
 
 			const mockSchedules = [
 				{
 					id: "schedule-1",
-					patientId: "patient-1",
+					patientId: "patient-123",
 					doctorId: "doctor-1",
-					date: new Date(),
-					status: "scheduled"
+					scheduledAt: new Date(),
+					status: "SCHEDULED"
 				}
 			];
 
-			mockService.run.mockResolvedValue(mockSchedules);
+			mockPatientService.run.mockResolvedValue(mockSchedules);
 
-			const result = await controller.get(headers);
+			const result = await controller.get(req);
 
-			expect(service.run).toHaveBeenCalledWith(headers.authorization);
+			expect(patientService.run).toHaveBeenCalledWith("patient-123");
+			expect(doctorService.run).not.toHaveBeenCalled();
 			expect(result).toEqual(mockSchedules);
 		});
 
-		it("deve retornar resultado do service", async () => {
-			const headers: AuthorizationHeader = {
-				authorization: "Bearer valid-token"
-			};
+		it("deve chamar o serviço de médico para usuário DOCTOR", async () => {
+			const req: AuthenticatedRequest = {
+				user: {
+					id: "doctor-456",
+					name: "Dr. Maria",
+					email: "maria@clinic.com",
+					type: "DOCTOR"
+				}
+			} as AuthenticatedRequest;
 
-			const expectedResult = [];
-			mockService.run.mockResolvedValue(expectedResult);
+			const mockSchedules = [
+				{
+					id: "schedule-2",
+					patientId: "patient-1",
+					doctorId: "doctor-456",
+					scheduledAt: new Date(),
+					status: "SCHEDULED"
+				}
+			];
 
-			const result = await controller.get(headers);
+			mockDoctorService.run.mockResolvedValue(mockSchedules);
 
-			expect(result).toBe(expectedResult);
+			const result = await controller.get(req);
+
+			expect(doctorService.run).toHaveBeenCalledWith("doctor-456");
+			expect(patientService.run).not.toHaveBeenCalled();
+			expect(result).toEqual(mockSchedules);
 		});
 
-		it("deve propagar erros do service", async () => {
-			const headers: AuthorizationHeader = {
-				authorization: "Bearer invalid-token"
-			};
+		it("deve propagar erros do serviço de paciente", async () => {
+			const req: AuthenticatedRequest = {
+				user: {
+					id: "patient-123",
+					name: "João Silva",
+					email: "joao@email.com",
+					type: "PATIENT"
+				}
+			} as AuthenticatedRequest;
 
 			const error = new Error("Service error");
-			mockService.run.mockRejectedValue(error);
+			mockPatientService.run.mockRejectedValue(error);
 
-			await expect(controller.get(headers)).rejects.toThrow(error);
+			await expect(controller.get(req)).rejects.toThrow(error);
+		});
+
+		it("deve propagar erros do serviço de médico", async () => {
+			const req: AuthenticatedRequest = {
+				user: {
+					id: "doctor-456",
+					name: "Dr. Maria",
+					email: "maria@clinic.com",
+					type: "DOCTOR"
+				}
+			} as AuthenticatedRequest;
+
+			const error = new Error("Doctor service error");
+			mockDoctorService.run.mockRejectedValue(error);
+
+			await expect(controller.get(req)).rejects.toThrow(error);
 		});
 	});
 });

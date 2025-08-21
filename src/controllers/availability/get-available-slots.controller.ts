@@ -46,10 +46,9 @@ export class GetAvailableSlotsController {
 		description: "Parâmetros de query inválidos" 
 	})
 	async get(@Query() query: GetAvailableSlotsQuery) {
-		// Se não especificar doctorId, retorna erro por enquanto
-		// TODO: Implementar busca geral por todos os médicos
+		// Se não especificar doctorId, retorna erro
 		if (!query.doctorId) {
-			throw new Error("doctorId is required for now");
+			throw new Error("doctorId is required");
 		}
 
 		const startDate = query.date ? new Date(query.date) : 

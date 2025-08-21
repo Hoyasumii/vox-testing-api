@@ -1,22 +1,23 @@
-import { GetScheduleByPatientIdService } from "@/services/schedule";
-import { Controller, Get, Headers } from "@nestjs/common";
-import { AuthorizationHeader } from "../common-dtos";
-import { ApiTags, ApiOperation, ApiResponse, ApiHeader } from "@nestjs/swagger";
+import { GetScheduleByPatientIdService, GetScheduleByDoctorIdService } from "@/services/schedule";
+import { Controller, Get, UseGuards, Request } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from "@nestjs/swagger";
+import { JwtAuthGuard } from "@/guards";
+import type { AuthenticatedRequest } from "@/types";
 
 @ApiTags("🗓️ Agendamentos")
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller()
 export class GetSchedulesByUserController {
-	constructor(private service: GetScheduleByPatientIdService) {}
+	constructor(
+		private patientService: GetScheduleByPatientIdService,
+		private doctorService: GetScheduleByDoctorIdService
+	) {}
 
 	@Get()
 	@ApiOperation({ 
 		summary: "Listar agendamentos do usuário logado",
 		description: "Retorna todos os agendamentos do usuário logado (paciente ou médico)"
-	})
-	@ApiHeader({
-		name: "authorization",
-		description: "Token JWT do usuário",
-		required: true
 	})
 	@ApiResponse({ 
 		status: 200, 
@@ -26,8 +27,12 @@ export class GetSchedulesByUserController {
 		status: 401, 
 		description: "Token inválido ou expirado" 
 	})
-	async get(@Headers() headers: AuthorizationHeader) {
-		// TODO: Determinar se é paciente ou médico pelo token e usar o serviço apropriado
-		return await this.service.run(headers.authorization);
+	async get(@Request() req: AuthenticatedRequest) {
+		// Determina automaticamente se é paciente ou médico pelo token
+		if (req.user.type === 'DOCTOR') {
+			return await this.doctorService.run(req.user.id);
+		} else {
+			return await this.patientService.run(req.user.id);
+		}
 	}
 }

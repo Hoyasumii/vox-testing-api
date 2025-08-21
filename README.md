@@ -54,11 +54,18 @@
 - [x] `GET /hello-world` - Verificação de saúde da API
 
 ## 🛡️ **Middleware de Segurança**
-- [ ] Autenticação JWT em todas as rotas (exceto auth)
-- [ ] Autorização por perfil (DOCTOR/PATIENT)
-- [ ] Rate limiting
-- [ ] Validação de DTOs
-- [ ] Sanitização de inputs
+- [x] Autenticação JWT em todas as rotas (exceto auth)
+- [x] Autorização por perfil (DOCTOR/PATIENT)
+- [x] **Rate limiting** implementado com @nestjs/throttler
+- [x] Validação de DTOs
+- [x] Sanitização de inputs
+
+### 🚨 **Rate Limiting Configurado**
+- **Autenticação**: 5 tentativas/min (login), 3 tentativas/5min (register)
+- **Agendamentos**: 20 criações/min por usuário
+- **Disponibilidades**: 15 criações/min por médico
+- **Consultas**: 100 requests/min para busca de horários
+- **Documentação completa**: `docs/RATE_LIMITING.md`
 
 ## 📝 **Validações por Rota**
 - [ ] Verificar se usuário pode acessar recurso (próprios dados)

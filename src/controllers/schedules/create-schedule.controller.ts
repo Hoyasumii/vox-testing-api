@@ -5,6 +5,7 @@ import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 import { uuid } from "@/dtos";
 import { JwtAuthGuard, RolesGuard, Roles } from "@/guards";
+import { Throttle } from "@nestjs/throttler";
 import type { AuthenticatedRequest } from "@/types";
 
 // DTO customizado para o Swagger sem z.date()
@@ -25,6 +26,7 @@ export class CreateScheduleController {
 	constructor(private service: CreateScheduleService) {}
 
 	@Post()
+	@Throttle({ medium: { limit: 20, ttl: 60000 } }) // 20 agendamentos por minuto
 	@ApiOperation({ 
 		summary: "Criar agendamento",
 		description: "Cria um novo agendamento médico (apenas pacientes)"
@@ -44,6 +46,10 @@ export class CreateScheduleController {
 	@ApiResponse({ 
 		status: 403, 
 		description: "Usuário não tem permissão (deve ser paciente)" 
+	})
+	@ApiResponse({ 
+		status: 429, 
+		description: "Muitas tentativas de agendamento. Aguarde um momento." 
 	})
 	@ApiResponse({ 
 		status: 409, 

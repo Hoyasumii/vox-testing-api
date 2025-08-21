@@ -5,6 +5,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from "@ne
 import { createZodDto } from "nestjs-zod";
 import { CreateDoctorAvailabilityDTO } from "@/dtos/doctors-availability";
 import { JwtAuthGuard, RolesGuard, Roles } from "@/guards";
+import { Throttle } from "@nestjs/throttler";
 import type { AuthenticatedRequest } from "@/types";
 
 export class CreateDoctorAvailabilityBody extends createZodDto(CreateDoctorAvailabilityDTO) {}
@@ -18,6 +19,7 @@ export class CreateDoctorAvailabilityController {
 	constructor(private service: CreateDoctorAvailabilityService) {}
 
 	@Post()
+	@Throttle({ medium: { limit: 15, ttl: 60000 } }) // 15 criações de disponibilidade por minuto
 	@ApiOperation({ 
 		summary: "Criar disponibilidade",
 		description: "Cria uma nova disponibilidade de horário para o médico"
@@ -38,6 +40,10 @@ export class CreateDoctorAvailabilityController {
 	@ApiResponse({ 
 		status: 403, 
 		description: "Usuário não tem permissão (deve ser médico)" 
+	})
+	@ApiResponse({ 
+		status: 429, 
+		description: "Muitas criações de disponibilidade. Aguarde um momento." 
 	})
 	@ApiResponse({ 
 		status: 409, 

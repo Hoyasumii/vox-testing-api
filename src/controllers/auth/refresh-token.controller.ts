@@ -8,6 +8,7 @@ import {
 import { VerifyJwtToken, RefreshJwtToken } from "@/services/jwt";
 import { RefreshToken } from "../common-dtos";
 import { ApiTags, ApiOperation, ApiResponse, ApiHeader } from "@nestjs/swagger";
+import { Throttle } from "@nestjs/throttler";
 
 @ApiTags("🔐 Autenticação")
 @Controller()
@@ -18,6 +19,7 @@ export class RefreshTokenController {
 	) {}
 
 	@Post()
+	@Throttle({ medium: { limit: 10, ttl: 60000 } }) // 10 renovações por minuto
 	@ApiOperation({ 
 		summary: "Renovar token JWT",
 		description: "Renova um token JWT válido para estender a sessão do usuário"
@@ -34,6 +36,10 @@ export class RefreshTokenController {
 	@ApiResponse({ 
 		status: 401, 
 		description: "Token inválido ou expirado" 
+	})
+	@ApiResponse({ 
+		status: 429, 
+		description: "Muitas tentativas de renovação de token. Aguarde um momento." 
 	})
 	async refresh(@Headers() headers: RefreshToken) {
 		const { authorization } = headers;

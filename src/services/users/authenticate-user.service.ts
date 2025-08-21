@@ -27,6 +27,6 @@ export class AuthenticateUserService extends Service<
 
 		return await this.repository.channel.talk("jwt:sign", {
 			userId: userAuthData.id,
-		});
+		}) as string;
 	}
 }

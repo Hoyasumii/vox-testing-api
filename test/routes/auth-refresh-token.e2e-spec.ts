@@ -17,7 +17,9 @@ describe("AuthRefreshTokenModule (e2e)", () => {
 	});
 
 	afterEach(async () => {
-		await app.close();
+		if (app) {
+			await app.close();
+		}
 	});
 
 	it("deve rejeitar requisição sem Authorization header", () => {

@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  postgres-test:
+    image: postgres:15-alpine
+    container_name: vox-testing-postgres-test
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: vox_testing_test
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./persistence/postgresql/test-data:/var/lib/postgresql/data
+    networks:
+      - vox-testing-test
+
+  redis-test:
+    image: redis:7-alpine
+    container_name: vox-testing-redis-test
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    networks:
+      - vox-testing-test
+
+networks:
+  vox-testing-test:
+    driver: bridge

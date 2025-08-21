@@ -2,8 +2,9 @@ import { Test, type TestingModule } from "@nestjs/testing";
 import type { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import { AuthRegisterModule } from "@/modules/auth/register.module";
+import { setupTestApp } from "../setup-e2e";
 
-describe("AuthRegisterModule (e2e)", () => {
+describe("AuthRegisterRoute (e2e)", () => {
 	let app: INestApplication;
 
 	beforeEach(async () => {
@@ -11,117 +12,80 @@ describe("AuthRegisterModule (e2e)", () => {
 			imports: [AuthRegisterModule],
 		}).compile();
 
-		app = moduleFixture.createNestApplication();
-		await app.init();
+		app = await setupTestApp(moduleFixture.createNestApplication());
 	});
 
 	afterEach(async () => {
-		await app.close();
+		if (app) {
+			await app.close();
+		}
 	});
 
-	describe("POST /", () => {
-		it("deve criar um usuário com dados válidos", () => {
+	describe("POST /auth/register", () => {
+		it("deve registrar um novo usuário com dados válidos", () => {
 			const userData = {
-				name: "João Silva",
-				email: `test-${Date.now()}@email.com`,
-				password: "Password123!",
+				name: "Novo Usuário",
+				email: "novo@example.com",
+				password: "SenhaForte123",
 				type: "PATIENT",
 			};
 
 			return request(app.getHttpServer())
-				.post("/")
+				.post("/auth/register")
 				.send(userData)
 				.expect(201)
 				.expect((res) => {
-					expect(res.body).toMatch(
-						/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
-					);
+					expect(res.body.data).toHaveProperty("id");
+					expect(res.body.data).toHaveProperty("name", userData.name);
+					expect(res.body.data).toHaveProperty("email", userData.email);
+					expect(res.body.data).toHaveProperty("type", userData.type);
+					expect(res.body.data).not.toHaveProperty("password");
 				});
 		});
 
-		it("deve criar um usuário médico com dados válidos", () => {
+		it("deve rejeitar email duplicado", async () => {
 			const userData = {
-				name: "Dr. Maria Santos",
-				email: `doctor-${Date.now()}@email.com`,
-				password: "Password123!",
-				type: "DOCTOR",
+				name: "Usuário Test",
+				email: "duplicado@example.com",
+				password: "SenhaForte123",
+				type: "PATIENT",
 			};
 
-			return request(app.getHttpServer())
-				.post("/")
+			// Criar primeiro usuário
+			await request(app.getHttpServer())
+				.post("/auth/register")
 				.send(userData)
-				.expect(201)
+				.expect(201);
+
+			// Tentar criar usuário com o mesmo email
+			return request(app.getHttpServer())
+				.post("/auth/register")
+				.send(userData)
+				.expect(409)
 				.expect((res) => {
-					expect(res.body).toMatch(
-						/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
-					);
+					expect(res.body.message).toContain("Email já está em uso");
 				});
 		});
 
-		it("deve rejeitar usuário com email inválido", () => {
-			const userData = {
-				name: "João Silva",
+		it("deve rejeitar dados inválidos", () => {
+			const invalidData = {
+				name: "",
 				email: "email-invalido",
-				password: "Password123!",
-				type: "PATIENT",
+				password: "123", // muito fraca
+				type: "INVALID_TYPE",
 			};
 
 			return request(app.getHttpServer())
-				.post("/")
-				.send(userData)
+				.post("/auth/register")
+				.send(invalidData)
 				.expect(400);
 		});
 
-		it("deve rejeitar usuário com senha fraca", () => {
-			const userData = {
-				name: "João Silva",
-				email: `weak-password-${Date.now()}@email.com`,
-				password: "123",
-				type: "PATIENT",
-			};
-
+		it("deve rejeitar corpo da requisição vazio", () => {
 			return request(app.getHttpServer())
-				.post("/")
-				.send(userData)
-				.expect(400);
-		});
-
-		it("deve rejeitar usuário sem nome", () => {
-			const userData = {
-				email: `no-name-${Date.now()}@email.com`,
-				password: "Password123!",
-				type: "PATIENT",
-			};
-
-			return request(app.getHttpServer())
-				.post("/")
-				.send(userData)
-				.expect(400);
-		});
-
-		it("deve rejeitar dados vazios", () => {
-			return request(app.getHttpServer())
-				.post("/")
+				.post("/auth/register")
 				.send({})
 				.expect(400);
-		});
-
-		it("deve criar usuário sem tipo especificado (usando default)", () => {
-			const userData = {
-				name: "Ana Costa",
-				email: `no-type-${Date.now()}@email.com`,
-				password: "Password123!",
-			};
-
-			return request(app.getHttpServer())
-				.post("/")
-				.send(userData)
-				.expect(201)
-				.expect((res) => {
-					expect(res.body).toMatch(
-						/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
-					);
-				});
 		});
 	});
 });

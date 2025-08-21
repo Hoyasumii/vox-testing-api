@@ -8,7 +8,7 @@
 - [x] Implementar padrão createZodDto em todos os controllers
 - [x] Adicionar tags OpenAPI para agrupamento de rotas
 - [x] Criar as Rotas
-- [ ] Criar os Testes E2E
+- [x] Criar os Testes E2E
 - [x] Implementar uma feature de Listar as consultas do médico
 
 ## 📋 Mapa de Rotas da API

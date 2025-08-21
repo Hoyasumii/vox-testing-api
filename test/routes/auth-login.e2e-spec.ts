@@ -2,9 +2,11 @@ import { Test, type TestingModule } from "@nestjs/testing";
 import type { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import { AuthLoginModule } from "@/modules/auth/login.module";
+import { createTestUser, setupTestApp } from "../setup-e2e";
 
 describe("AuthLoginModule (e2e)", () => {
 	let app: INestApplication;
+	let testUserEmail: string;
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -12,29 +14,36 @@ describe("AuthLoginModule (e2e)", () => {
 		}).compile();
 
 		app = moduleFixture.createNestApplication();
-		await app.init();
+		await setupTestApp(app);
+
+		// Criar usuário de teste
+		testUserEmail = `test-${Date.now()}@email.com`;
+		await createTestUser("PATIENT", testUserEmail);
 	});
 
 	afterEach(async () => {
-		await app.close();
+		if (app) {
+			await app.close();
+		}
 	});
 
 	describe("POST /", () => {
-		it("deve autenticar usuário com credenciais válidas", () => {
+		it("deve autenticar usuário com credenciais válidas", async () => {
 			const credentials = {
-				email: "test@email.com",
-				password: "Password123!",
+				email: testUserEmail,
+				password: "Password123!", // senha padrão do createTestUser
 			};
 
-			return request(app.getHttpServer())
+			const response = await request(app.getHttpServer())
 				.post("/")
-				.send(credentials)
-				.expect(201)
-				.expect((res) => {
-					// Verifica se retorna um JWT válido
-					expect(typeof res.body).toBe("string");
-					expect(res.body.split(".")).toHaveLength(3); // JWT tem 3 partes separadas por ponto
-				});
+				.send(credentials);
+
+			expect(response.status).toBe(201);
+			// A resposta deve conter o JWT no formato padronizado
+			expect(response.body).toHaveProperty("success", true);
+			expect(response.body).toHaveProperty("data");
+			expect(typeof response.body.data).toBe("string");
+			expect(response.body.data.split(".")).toHaveLength(3); // JWT tem 3 partes separadas por ponto
 		});
 
 		it("deve rejeitar credenciais com email inválido", () => {
@@ -51,8 +60,8 @@ describe("AuthLoginModule (e2e)", () => {
 
 		it("deve rejeitar credenciais com senha fraca", () => {
 			const credentials = {
-				email: "test@email.com",
-				password: "123",
+				email: testUserEmail,
+				password: "123", // senha que não atende aos critérios
 			};
 
 			return request(app.getHttpServer())
@@ -74,7 +83,7 @@ describe("AuthLoginModule (e2e)", () => {
 
 		it("deve rejeitar credenciais sem senha", () => {
 			const credentials = {
-				email: "test@email.com",
+				email: testUserEmail,
 			};
 
 			return request(app.getHttpServer())
@@ -104,7 +113,7 @@ describe("AuthLoginModule (e2e)", () => {
 
 		it("deve rejeitar senha incorreta", () => {
 			const credentials = {
-				email: "test@email.com",
+				email: testUserEmail,
 				password: "SenhaErrada123!",
 			};
 

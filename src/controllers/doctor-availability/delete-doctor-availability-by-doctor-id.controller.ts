@@ -20,13 +20,38 @@ export class DeleteDoctorAvailabilityByDoctorIdController {
 	})
 	@ApiResponse({ 
 		status: 200, 
-		description: "Disponibilidades deletadas com sucesso" 
+		description: "Disponibilidades deletadas com sucesso",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: true,
+					description: "Indica se a operação foi bem-sucedida"
+				},
+				data: {
+					type: "number",
+					description: "Número de disponibilidades deletadas",
+					example: 5
+				}
+			},
+			required: ["success", "data"]
+		}
 	})
 	@ApiResponse({ 
 		status: 404, 
-		description: "Médico não encontrado" 
+		description: "Médico não encontrado",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				}
+			}
+		}
 	})
-	async delete(@Param() params: DoctorIdParam) {
+	async delete(@Param() params: DoctorIdParam): Promise<number> {
 		return await this.service.run(params.id);
 	}
 }

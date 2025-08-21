@@ -22,16 +22,54 @@ export class UpdateUserController {
 	})
 	@ApiResponse({ 
 		status: 200, 
-		description: "Dados do usuário atualizados com sucesso" 
+		description: "Dados do usuário atualizados com sucesso",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: true,
+					description: "Indica se a operação foi bem-sucedida"
+				},
+				data: {
+					type: "boolean",
+					example: true,
+					description: "Resultado da operação de atualização"
+				}
+			},
+			required: ["success", "data"]
+		}
+	})
+	@ApiResponse({ 
+		status: 400, 
+		description: "Dados de entrada inválidos",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				},
+			}
+		}
 	})
 	@ApiResponse({ 
 		status: 401, 
-		description: "Token inválido ou expirado" 
+		description: "Token inválido ou expirado",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				},
+			}
+		}
 	})
 	async update(
 		@Request() req: AuthenticatedRequest,
 		@Body() data: UpdateUser,
-	) {
+	): Promise<boolean> {
 		return await this.service.run({ id: req.user.id, data });
 	}
 }

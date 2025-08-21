@@ -37,7 +37,7 @@ describe("RefreshTokenController", () => {
 			const result = await controller.refresh({ authorization: validToken });
 
 			// Assert
-			expect(result).toEqual({ token: newToken });
+			expect(result).toEqual(newToken);
 			expect(verifyJwtToken.run).toHaveBeenCalledWith(validToken);
 			expect(refreshJwtToken.run).toHaveBeenCalledWith(validToken);
 		});

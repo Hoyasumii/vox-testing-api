@@ -20,17 +20,51 @@ export class CancelScheduleController {
 	})
 	@ApiResponse({ 
 		status: 200, 
-		description: "Agendamento cancelado com sucesso" 
+		description: "Agendamento cancelado com sucesso",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: true,
+					description: "Indica se a operação foi bem-sucedida"
+				},
+				data: {
+					type: "boolean",
+					description: "Confirmação do cancelamento",
+					example: true
+				}
+			},
+			required: ["success", "data"]
+		}
 	})
 	@ApiResponse({ 
 		status: 404, 
-		description: "Agendamento não encontrado" 
+		description: "Agendamento não encontrado",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				}
+			}
+		}
 	})
 	@ApiResponse({ 
 		status: 409, 
-		description: "Agendamento não pode ser cancelado (já realizado ou cancelado)" 
+		description: "Agendamento não pode ser cancelado (já realizado ou cancelado)",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				}
+			}
+		}
 	})
-	async cancel(@Param() params: ScheduleIdParam) {
+	async cancel(@Param() params: ScheduleIdParam): Promise<boolean> {
 		return await this.service.run(params.id);
 	}
 }

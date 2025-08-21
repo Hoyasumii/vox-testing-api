@@ -20,17 +20,51 @@ export class DeleteDoctorsController {
 	})
 	@ApiResponse({ 
 		status: 200, 
-		description: "Perfil de médico deletado com sucesso" 
+		description: "Perfil de médico deletado com sucesso",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: true,
+					description: "Indica se a operação foi bem-sucedida"
+				},
+				data: {
+					type: "boolean",
+					description: "Confirmação da exclusão",
+					example: true
+				}
+			},
+			required: ["success", "data"]
+		}
 	})
 	@ApiResponse({ 
 		status: 401, 
-		description: "Token inválido ou expirado" 
+		description: "Token inválido ou expirado",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				}
+			}
+		}
 	})
 	@ApiResponse({ 
 		status: 403, 
-		description: "Usuário não é um médico" 
+		description: "Usuário não é um médico",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				}
+			}
+		}
 	})
-	async delete(@Headers() headers: AuthorizationHeader) {
+	async delete(@Headers() headers: AuthorizationHeader): Promise<boolean> {
 		return await this.service.run(headers.authorization);
 	}
 }

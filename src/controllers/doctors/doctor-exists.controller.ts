@@ -21,13 +21,38 @@ export class DoctorExistsController {
 	})
 	@ApiResponse({ 
 		status: 200, 
-		description: "Informação sobre a existência do médico" 
+		description: "Informação sobre a existência do médico",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: true,
+					description: "Indica se a operação foi bem-sucedida"
+				},
+				data: {
+					type: "boolean",
+					description: "True se o médico existe, false caso contrário",
+					example: true
+				}
+			},
+			required: ["success", "data"]
+		}
 	})
 	@ApiResponse({ 
 		status: 404, 
-		description: "Médico não encontrado" 
+		description: "Médico não encontrado",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				}
+			}
+		}
 	})
-	async run(@Param() params: DoctorIdParam) {
+	async run(@Param() params: DoctorIdParam): Promise<boolean> {
 		return await this.service.run(params.id);
 	}
 }

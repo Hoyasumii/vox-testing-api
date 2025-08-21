@@ -31,17 +31,64 @@ export class RefreshTokenController {
 	})
 	@ApiResponse({ 
 		status: 200, 
-		description: "Token renovado com sucesso" 
+		description: "Token renovado com sucesso",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: true,
+					description: "Indica se a operação foi bem-sucedida"
+				},
+				data: {
+					type: "string",
+					description: "Novo JWT token renovado",
+					example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+				}
+			},
+			required: ["success", "data"]
+		}
+	})
+	@ApiResponse({ 
+		status: 400, 
+		description: "Token de autorização não fornecido",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				},
+			}
+		}
 	})
 	@ApiResponse({ 
 		status: 401, 
-		description: "Token inválido ou expirado" 
+		description: "Token inválido ou expirado",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				},
+			}
+		}
 	})
 	@ApiResponse({ 
 		status: 429, 
-		description: "Muitas tentativas de renovação de token. Aguarde um momento." 
+		description: "Muitas tentativas de renovação de token",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				},
+			}
+		}
 	})
-	async refresh(@Headers() headers: RefreshToken) {
+	async refresh(@Headers() headers: RefreshToken): Promise<string> {
 		const { authorization } = headers;
 		
 		if (!authorization || authorization.trim() === "") {
@@ -53,7 +100,7 @@ export class RefreshTokenController {
 
 			const newToken = await this.refreshJwtToken.run(authorization);
 
-			return { token: newToken };
+			return newToken; // Retorna apenas o token, interceptor cuidará da padronização
 		} catch {
 			throw new UnauthorizedException("Token inválido ou expirado");
 		}

@@ -14,23 +14,59 @@ export class LoginController {
 
 	@Post()
 	@Throttle({ short: { limit: 5, ttl: 60000 } }) // 5 tentativas por minuto
-	@ApiOperation({ 
+	@ApiOperation({
 		summary: "Autenticar usuário",
-		description: "Autentica um usuário (médico ou paciente) no sistema"
+		description:
+			"Autentica um usuário (médico ou paciente) no sistema e retorna um JWT token",
 	})
-	@ApiResponse({ 
-		status: 200, 
-		description: "Autenticação realizada com sucesso" 
+	@ApiResponse({
+		status: 200,
+		description: "Autenticação realizada com sucesso",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: true,
+					description: "Indica se a operação foi bem-sucedida",
+				},
+				data: {
+					type: "string",
+					description: "JWT token para autenticação",
+					example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+				},
+			},
+			required: ["success", "data"],
+		},
 	})
-	@ApiResponse({ 
-		status: 401, 
-		description: "Credenciais inválidas" 
+	@ApiResponse({
+		status: 400,
+		description: "Dados de entrada inválidos ou credenciais incorretas",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false,
+				},
+			},
+		},
 	})
-	@ApiResponse({ 
-		status: 429, 
-		description: "Muitas tentativas de login. Tente novamente em alguns minutos." 
+	@ApiResponse({
+		status: 429,
+		description:
+			"Muitas tentativas de login. Tente novamente em alguns minutos.",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false,
+				},
+			},
+		},
 	})
-	async auth(@Body() body: AuthenticateUser) {
+	async auth(@Body() body: AuthenticateUser): Promise<string> {
 		return await this.service.run(body);
 	}
 }

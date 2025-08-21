@@ -31,29 +31,107 @@ export class CreateDoctorAvailabilityController {
 	})
 	@ApiResponse({ 
 		status: 201, 
-		description: "Disponibilidade criada com sucesso" 
+		description: "Disponibilidade criada com sucesso",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: true,
+					description: "Indica se a operação foi bem-sucedida"
+				},
+				data: {
+					type: "boolean",
+					example: true,
+					description: "Resultado da operação de criação"
+				}
+			},
+			required: ["success", "data"]
+		}
+	})
+	@ApiResponse({ 
+		status: 400, 
+		description: "Dados de entrada inválidos",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				},
+			}
+		}
 	})
 	@ApiResponse({ 
 		status: 401, 
-		description: "Token inválido ou expirado" 
+		description: "Token inválido ou expirado",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				},
+			}
+		}
 	})
 	@ApiResponse({ 
 		status: 403, 
-		description: "Usuário não tem permissão (deve ser médico)" 
+		description: "Usuário não tem permissão (deve ser médico)",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				},
+			}
+		}
 	})
 	@ApiResponse({ 
-		status: 429, 
-		description: "Muitas criações de disponibilidade. Aguarde um momento." 
+		status: 404, 
+		description: "Médico não encontrado",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				},
+			}
+		}
 	})
 	@ApiResponse({ 
 		status: 409, 
-		description: "Conflito de horários" 
+		description: "Conflito de horários",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				},
+			}
+		}
+	})
+	@ApiResponse({ 
+		status: 429, 
+		description: "Muitas criações de disponibilidade",
+		schema: {
+			type: "object",
+			properties: {
+				success: {
+					type: "boolean",
+					example: false
+				},
+			}
+		}
 	})
 	async create(
 		@Request() req: AuthenticatedRequest,
 		@Param() params: DoctorIdParam,
 		@Body() body: CreateDoctorAvailabilityBody
-	) {
+	): Promise<boolean> {
 		// Verificar se o médico está tentando criar disponibilidade para si mesmo
 		if (params.id !== req.user.id) {
 			throw new ForbiddenException('Você só pode gerenciar suas próprias disponibilidades');

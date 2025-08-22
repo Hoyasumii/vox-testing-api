@@ -2,7 +2,590 @@
 
 Sistema backend para agendamento médico desenvolvido com NestJS, onde médicos podem disponibilizar seus horários e pacientes podem realizar agendamentos.
 
-## 🚀 Tecnologias Utilizadas
+## � Decisão Tecnológica: Por que NestJS ao invés de .NET ou Java?
+Eu acabei me aperfeiçoando bastante na stack de Node.js com TypeScript e o ecossistema em si. Entretanto, há cerca de um ano, eu venho amadurecendo muito a forma de como eu vejo para se criar um projeto, e tenho muito interesse em poder ingressar para uma outra linguagem, só não tive oportunidade.
+
+Além do mais, quando um projeto se inicia com a modelagem do sistema em si e o design do código, a linguagem acaba não fazendo muita diferença, pois a linguagem ubíqua prevalece e acaba se criando um único idioma. Não sei se faz sentido, mas quando o projeto acaba tendo a necessidade de ser robusto e ele é construído nesse intuito, as barreiras entre frameworks e linguagens se tornam quase que nulas.
+
+#### ✅ **Escolhas Feitas**
+- **NestJS vs Express**: Estrutura + DI + Decorators
+- **Prisma vs TypeORM**: Developer experience + type safety
+- **Zod vs class-validator**: Runtime safety + schema reuse
+- **Redis vs In-memory**: Distributed caching + persistence
+- **JWT vs Sessions**: Stateless + microservices ready
+
+#### ⚖️ **Trade-offs Considerados**
+- **Performance vs Maintainability**: Optamos por código limpo
+- **Flexibility vs Convention**: NestJS opinions aceitas
+- **Simplicity vs Features**: Features essenciais implementadas
+- **Memory vs Speed**: Cache estratégico implementado
+
+## 🎨 Decisões de Design de Código
+
+### Organização de Módulos
+
+```
+src/
+├── modules/                    # Módulos de domínio
+│   ├── auth/                  # Autenticação isolada
+│   ├── users/                 # Gestão de usuários
+│   ├── doctors/               # Domínio médicos
+│   ├── schedules/             # Domínio agendamentos
+│   └── availability/          # Domínio disponibilidade
+├── shared/                    # Código compartilhado
+│   ├── guards/               # Guards reutilizáveis
+│   ├── interceptors/         # Interceptors globais
+│   ├── decorators/           # Decorators customizados
+│   └── pipes/                # Pipes de validação
+└── common/                   # Utilitários comuns
+    ├── dtos/                 # DTOs base
+    ├── errors/               # Hierarquia de erros
+    └── types/                # Tipos compartilhados
+```
+
+### Convenções de Nomenclatura
+
+#### 1. **Arquivos e Classes**
+```typescript
+// Controllers: PascalCase + .controller.ts
+export class ScheduleController {}
+
+// Services: PascalCase + .service.ts  
+export class ScheduleService {}
+
+// DTOs: PascalCase + .dto.ts
+export class CreateScheduleDto {}
+
+// Entities: PascalCase (Prisma models)
+export interface Schedule {}
+```
+
+#### 2. **Métodos e Variáveis**
+```typescript
+// Métodos: camelCase + verbo descritivo
+async createSchedule(data: CreateScheduleDto) {}
+async findAvailableSlots(filters: AvailabilityFilters) {}
+async cancelScheduleById(id: string) {}
+
+// Variáveis: camelCase + substantivo descritivo
+const availableSlots = await this.findSlots();
+const doctorSchedules = await this.repository.findByDoctor();
+```
+
+#### 3. **Constantes e Enums**
+```typescript
+// Constantes: SCREAMING_SNAKE_CASE
+export const DEFAULT_PAGINATION_LIMIT = 20;
+export const CACHE_TTL_MINUTES = 30;
+
+// Enums: PascalCase
+export enum ScheduleStatus {
+  SCHEDULED = 'SCHEDULED',
+  CANCELED = 'CANCELED',
+  COMPLETED = 'COMPLETED'
+}
+```
+
+### Padrões de Implementação
+
+#### 1. **Error Handling Strategy**
+```typescript
+// Hierarquia de erros customizada
+abstract class ApplicationError extends Error {
+  abstract statusCode: number;
+  abstract errorCode: string;
+}
+
+class ConflictError extends ApplicationError {
+  statusCode = 409;
+  errorCode = 'CONFLICT';
+}
+
+// Uso consistente em services
+async createSchedule(data: CreateScheduleDto) {
+  const hasConflict = await this.checkTimeConflict(data);
+  
+  if (hasConflict) {
+    throw new ConflictError('Schedule time conflict detected');
+  }
+}
+```
+
+#### 2. **Response Standardization**
+```typescript
+// DTOs de resposta padronizados
+export class ScheduleResponseDto {
+  @ApiProperty() id: string;
+  @ApiProperty() doctorId: string;
+  @ApiProperty() patientId: string;
+  @ApiProperty() dateTime: string;
+  @ApiProperty() status: ScheduleStatus;
+  @ApiProperty() createdAt: string;
+  @ApiProperty() updatedAt: string;
+}
+
+// Paginação consistente
+export class PaginatedResponseDto<T> {
+  @ApiProperty() data: T[];
+  @ApiProperty() pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+```
+
+#### 3. **Validation Patterns**
+```typescript
+// Schemas Zod reutilizáveis
+export const UUIDSchema = z.string().uuid();
+export const DateTimeSchema = z.string().datetime();
+export const PaginationSchema = z.object({
+  page: z.number().min(1).default(1),
+  limit: z.number().min(1).max(100).default(20)
+});
+
+// Composição de schemas
+export const CreateScheduleSchema = z.object({
+  doctorId: UUIDSchema,
+  dateTime: DateTimeSchema,
+  patientNotes: z.string().optional()
+});
+```
+
+### Design de API REST
+
+#### 1. **RESTful Design Principles**
+```typescript
+// Recursos bem definidos
+/auth                          # Autenticação
+/users                         # Usuários genéricos
+/doctors                       # Recurso médicos
+/doctors/:id/availability      # Sub-recurso aninhado
+/schedules                     # Agendamentos
+/availability/slots            # Endpoint de busca especializado
+```
+
+#### 2. **HTTP Status Codes**
+```typescript
+// Uso semântico correto
+200 OK          // Sucesso em GET, PUT
+201 Created     // Sucesso em POST
+204 No Content  // Sucesso em DELETE
+400 Bad Request // Validation errors
+401 Unauthorized// Token inválido/ausente
+403 Forbidden   // Sem permissão
+404 Not Found   // Recurso não encontrado
+409 Conflict    // Conflito de agendamento
+429 Too Many    // Rate limit exceeded
+500 Internal    // Erro interno
+```
+
+#### 3. **Content Negotiation**
+```typescript
+// Headers padronizados
+@Header('Content-Type', 'application/json')
+@ApiProduces('application/json')
+@ApiConsumes('application/json')
+
+// Versionamento preparado
+@Controller({ path: 'schedules', version: '1' })
+```
+
+### Database Design Patterns
+
+#### 1. **Prisma Schema Organization**
+```prisma
+// Enums centralizados
+enum UserType { DOCTOR PATIENT }
+enum ScheduleStatus { SCHEDULED CANCELED COMPLETED }
+
+// Models com relacionamentos claros
+model User {
+  id        String   @id @default(uuid())
+  type      UserType @default(PATIENT)
+  
+  // Relacionamentos
+  doctorProfile    Doctor?
+  patientSchedules Schedule[] @relation("PatientSchedules")
+  
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+```
+
+#### 2. **Migration Strategy**
+```sql
+-- Naming: timestamp_description_of_change
+-- Example: 20250814124402_initial_migration
+
+-- Índices para performance
+CREATE INDEX idx_doctor_availability_datetime 
+ON "DoctorAvailability"(doctor_id, start_time, end_time);
+
+CREATE INDEX idx_schedule_status_datetime 
+ON "Schedule"(status, date_time);
+```
+
+### Testing Design Patterns
+
+#### 1. **Test Organization**
+```typescript
+// Describe blocks estruturados
+describe('ScheduleService', () => {
+  describe('createSchedule', () => {
+    it('should create schedule successfully', async () => {});
+    it('should throw conflict error for overlapping times', async () => {});
+    it('should validate doctor availability', async () => {});
+  });
+  
+  describe('cancelSchedule', () => {
+    it('should cancel own schedule as patient', async () => {});
+    it('should cancel any schedule as doctor', async () => {});
+    it('should throw forbidden for unauthorized cancel', async () => {});
+  });
+});
+```
+
+#### 2. **Mock Patterns**
+```typescript
+// Factory functions para testes
+export const createMockUser = (overrides?: Partial<User>): User => ({
+  id: 'uuid-mock',
+  email: 'test@example.com',
+  type: UserType.PATIENT,
+  ...overrides
+});
+
+// Repository mocks consistentes
+const mockScheduleRepository = {
+  create: jest.fn(),
+  findById: jest.fn(),
+  findByDoctor: jest.fn()
+};
+```
+
+### Performance Design Patterns
+
+#### 1. **Lazy Loading Strategy**
+```typescript
+// Eager loading apenas quando necessário
+const scheduleWithRelations = await prisma.schedule.findUnique({
+  where: { id },
+  include: {
+    doctor: { select: { id: true, user: { select: { name: true } } } },
+    patient: { select: { id: true, user: { select: { name: true } } } }
+  }
+});
+
+// Lazy loading para listas
+const schedules = await prisma.schedule.findMany({
+  select: { id: true, dateTime: true, status: true } // Apenas campos necessários
+});
+```
+
+#### 2. **Batch Operations**
+```typescript
+// Operações em lote quando possível
+async createMultipleAvailabilities(slots: CreateAvailabilityDto[]) {
+  return this.prisma.doctorAvailability.createMany({
+    data: slots,
+    skipDuplicates: true
+  });
+}
+```
+
+### Security Design Patterns
+
+#### 1. **Input Sanitization**
+```typescript
+// Sanitização automática nos DTOs
+export const CreateScheduleSchema = z.object({
+  doctorId: z.string().uuid(), // UUID validation
+  dateTime: z.string().datetime().refine(
+    (date) => new Date(date) > new Date(), // Future date only
+    { message: 'DateTime must be in the future' }
+  ),
+  notes: z.string().max(500).optional() // Length limit
+});
+```
+
+#### 2. **Authorization Patterns**
+```typescript
+// Guards compostos para autorização granular
+@UseGuards(JwtAuthGuard, ResourceOwnerGuard)
+async getMySchedules(@CurrentUser() user: User) {
+  // Usuário só acessa próprios agendamentos
+}
+
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserType.DOCTOR)
+async completeSchedule(@Param('id') id: string) {
+  // Apenas médicos podem completar agendamentos
+}
+```
+
+## 🚀 Tecnologias Utilizadaso Desenvolvedor]**  
+> *[Espaço reservado para explicar a escolha do NestJS ao invés de .NET, considerando fatores como experiência, ecosystem, performance, produtividade, etc.]*
+
+## 🏛️ Decisões de Arquitetura e Design
+
+### Arquitetura Geral
+
+Este projeto segue uma **arquitetura em camadas** inspirada em princípios de **Clean Architecture** e **Domain-Driven Design (DDD)**, adaptada para o contexto do NestJS:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    📡 CONTROLLERS LAYER                    │
+│  • Rotas REST API                                          │
+│  • Validação de entrada (DTOs + Zod)                       │
+│  • Documentação OpenAPI/Swagger                            │
+│  • Rate Limiting & Guards                                  │
+└─────────────────────────────────────────────────────────────┘
+                                ⬇️
+┌─────────────────────────────────────────────────────────────┐
+│                     🧠 SERVICES LAYER                      │
+│  • Lógica de negócio                                       │
+│  • Regras de domínio                                       │
+│  • Orquestração entre repositórios                         │
+│  • Sistema de mensageria (PUB/SUB)                         │
+└─────────────────────────────────────────────────────────────┘
+                                ⬇️
+┌─────────────────────────────────────────────────────────────┐
+│                  💾 REPOSITORIES LAYER                     │
+│  • Abstração de dados                                      │
+│  • Cache integrado (Redis)                                 │
+│  • Padrão Repository                                       │
+│  • Event-driven updates                                    │
+└─────────────────────────────────────────────────────────────┘
+                                ⬇️
+┌─────────────────────────────────────────────────────────────┐
+│                   🗄️ DATABASE LAYER                        │
+│  • PostgreSQL (Prisma ORM)                                 │
+│  • Migrations & Schema management                          │
+│  • Performance otimizado com índices                       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Principais Decisões Arquiteturais
+
+#### 1. **Separation of Concerns (SoC)**
+- **Controllers**: Apenas responsáveis por receber requisições e retornar respostas
+- **Services**: Contêm toda a lógica de negócio e regras de domínio
+- **Repositories**: Abstraem o acesso aos dados com cache integrado
+- **DTOs**: Validação e transformação de dados de entrada/saída
+
+#### 2. **Repository Pattern + Cache**
+```typescript
+// Exemplo da implementação
+abstract class CacheableRepository<T> {
+  // Cache automático em operações de leitura
+  // Invalidação inteligente em operações de escrita
+  // PUB/SUB para sincronização entre instâncias
+}
+```
+
+**Benefícios:**
+- **Performance**: Cache Redis transparente
+- **Escalabilidade**: Invalidação distribuída via PUB/SUB
+- **Testabilidade**: Repositórios mockáveis
+- **Manutenibilidade**: Mudanças de ORM isoladas
+
+#### 3. **Event-Driven Architecture (Messaging)**
+```typescript
+// Sistema de eventos para desacoplamento
+@Injectable()
+export class ScheduleService {
+  async createSchedule(data: CreateScheduleDto) {
+    const schedule = await this.repository.create(data);
+    
+    // Evento disparado automaticamente
+    this.eventBus.publish('schedule.created', schedule);
+    return schedule;
+  }
+}
+```
+
+**Vantagens:**
+- **Desacoplamento**: Serviços não dependem uns dos outros
+- **Extensibilidade**: Novos listeners sem modificar código existente
+- **Auditoria**: Rastreamento de eventos de negócio
+- **Integrações futuras**: Facilita adição de notificações, emails, etc.
+
+#### 4. **Type-Safe Validation com Zod**
+```typescript
+// DTOs tipados e validados
+export const CreateScheduleSchema = z.object({
+  doctorId: z.string().uuid(),
+  dateTime: z.string().datetime(),
+  patientNotes: z.string().optional()
+});
+
+export const CreateScheduleDto = createZodDto(CreateScheduleSchema);
+```
+
+**Benefícios:**
+- **Segurança**: Validação em runtime
+- **DX**: IntelliSense completo
+- **Documentação**: Schema automático no Swagger
+- **Manutenibilidade**: Mudanças propagadas automaticamente
+
+### Design Patterns Implementados
+
+#### 1. **Dependency Injection (DI)**
+- Container IoC nativo do NestJS
+- Facilita testes e mocking
+- Baixo acoplamento entre componentes
+
+#### 2. **Factory Pattern**
+```typescript
+// Factories para criação de objetos complexos
+@Injectable()
+export class ScheduleFactory {
+  createFromAvailability(availability: DoctorAvailability, patientId: string) {
+    // Lógica complexa de criação encapsulada
+  }
+}
+```
+
+#### 3. **Guard Pattern**
+```typescript
+// Proteção de rotas com guards customizados
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserType.DOCTOR)
+export class DoctorController {
+  // Apenas médicos podem acessar
+}
+```
+
+#### 4. **Decorator Pattern**
+```typescript
+// Decorators customizados para funcionalidades cross-cutting
+@RateLimit({ requests: 5, windowMs: 60000 })
+@ApiTags('Authentication')
+@Controller('auth')
+export class AuthController {}
+```
+
+### Estratégias de Performance
+
+#### 1. **Multi-Level Caching**
+```typescript
+// Cache em múltiplas camadas
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│ Application │ -> │    Redis    │ -> │ PostgreSQL  │
+│   Memory    │    │   (L2)      │    │   (Source)  │
+│   (L1)      │    │             │    │             │
+└─────────────┘    └─────────────┘    └─────────────┘
+```
+
+#### 2. **Database Optimization**
+- **Índices estratégicos**: Queries otimizadas para busca de disponibilidade
+- **Connection pooling**: Prisma com pool configurado
+- **Query optimization**: Eager/lazy loading conforme necessário
+
+#### 3. **Rate Limiting Inteligente**
+```typescript
+// Rate limits diferenciados por contexto
+const authLimits = { ttl: 60, limit: 5 };      // Login
+const scheduleLimits = { ttl: 60, limit: 20 }; // Agendamentos
+const searchLimits = { ttl: 60, limit: 100 };  // Busca
+```
+
+### Segurança por Design
+
+#### 1. **Defense in Depth**
+```
+┌─────────────────────────────────────────────────────────────┐
+│ 🛡️ SECURITY LAYERS                                         │
+├─────────────────────────────────────────────────────────────┤
+│ 1. Rate Limiting (DDoS protection)                         │
+│ 2. Input Validation (Zod schemas)                          │
+│ 3. Authentication (JWT tokens)                             │
+│ 4. Authorization (Role-based access)                       │
+│ 5. Data Sanitization (SQL injection prevention)           │
+│ 6. Audit Logging (Event tracking)                          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### 2. **Principle of Least Privilege**
+- **Role-based access**: DOCTOR vs PATIENT permissions
+- **Resource ownership**: Usuários só acessam seus próprios dados
+- **Route protection**: Guards em todas as rotas sensíveis
+
+### Estratégias de Escalabilidade
+
+#### 1. **Horizontal Scaling Ready**
+```typescript
+// Stateless design + Redis para sessões
+// PUB/SUB para sincronização entre instâncias
+// Load balancer friendly
+```
+
+#### 2. **Database Scaling**
+- **Read replicas**: Queries de leitura distribuídas
+- **Sharding friendly**: UUIDs como primary keys
+- **Async processing**: Events para operações pesadas
+
+#### 3. **Microservices Ready**
+```typescript
+// Arquitetura preparada para decomposição:
+// - Auth Service
+// - Doctor Service  
+// - Schedule Service
+// - Notification Service
+```
+
+### Qualidade e Manutenibilidade
+
+#### 1. **Testing Strategy**
+```
+├── Unit Tests (Jest)
+│   ├── Services (business logic)
+│   ├── Repositories (data access)
+│   └── Utilities (pure functions)
+├── Integration Tests
+│   ├── API endpoints (e2e)
+│   ├── Database operations
+│   └── Cache behavior
+└── Contract Tests
+    ├── DTO validation
+    └── API schemas
+```
+
+#### 2. **Code Quality**
+- **Biome**: Linting e formatação consistente
+- **TypeScript**: Type safety em toda a aplicação
+- **Conventional commits**: Histórico organizado
+- **Documentation**: Swagger automático + comentários
+
+#### 3. **Monitoring & Observability**
+```typescript
+// Preparado para:
+// - Metrics (Prometheus)
+// - Logging (structured logs)
+// - Tracing (distributed tracing)
+// - Health checks (k8s ready)
+```
+
+### Decisões de Trade-offs
+
+#### ✅ **Escolhas Feitas**
+- **NestJS vs Express**: Estrutura + DI + Decorators
+- **Prisma vs TypeORM**: Developer experience + type safety
+- **Zod vs class-validator**: Runtime safety + schema reuse
+- **Redis vs In-memory**: Distributed caching + persistence
+- **JWT vs Sessions**: Stateless + microservices ready
+
+#### ⚖️ **Trade-offs Considerados**
+- **Performance vs Maintainability**: Optamos por código limpo
+- **Flexibility vs Convention**: NestJS opinions aceitas
+- **Simplicity vs Features**: Features essenciais implementadas
+- **Memory vs Speed**: Cache estratégico implementado
+
+## �🚀 Tecnologias Utilizadas
 
 - **Backend**: NestJS (Node.js + TypeScript)
 - **Banco de Dados**: PostgreSQL
